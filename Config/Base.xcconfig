@@ -1,0 +1,9 @@
+// Base build configuration. Tracked in git — must never contain real
+// secrets. Local, untracked overrides live in Secrets.xcconfig (see
+// Secrets.xcconfig.example), included optionally so a fresh clone builds
+// and runs fine in guest mode with Supabase disabled.
+
+SUPABASE_URL =
+SUPABASE_ANON_KEY =
+
+#include? "Secrets.xcconfig"

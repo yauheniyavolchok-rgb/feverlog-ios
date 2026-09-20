@@ -5,10 +5,12 @@ struct RootView: View {
     @State private var themeManager = ThemeManager()
     @State private var onboardingStore = OnboardingStateStore()
     @State private var childStore = ChildStore()
+    @State private var authService = AuthService(client: SupabaseClientProvider.shared?.auth)
     @State private var showingSplash = true
     @Environment(\.colorScheme) private var systemColorScheme
     @Environment(\.modelContext) private var modelContext
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.scenePhase) private var scenePhase
 
     /// Minimum time the logo-only splash stays up, so it reads as an
     /// intentional brand moment rather than a flash — independent of how
@@ -27,6 +29,7 @@ struct RootView: View {
         }
         .environment(themeManager)
         .environment(childStore)
+        .environment(authService)
         .environment(\.feverPalette, themeManager.palette(for: systemColorScheme))
         .preferredColorScheme(themeManager.appearanceMode.preferredColorScheme)
         .task {
@@ -40,6 +43,18 @@ struct RootView: View {
                     showingSplash = false
                 }
             }
+        }
+        .task {
+            // Best-effort, never blocks the splash or local functionality —
+            // see SyncCoordinator/AuthService doc comments.
+            await SyncCoordinator(authService: authService, context: modelContext).runCycle()
+        }
+        .onOpenURL { url in
+            Task { try? await authService.handleAuthCallback(url: url) }
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            guard newPhase == .active else { return }
+            Task { await SyncCoordinator(authService: authService, context: modelContext).runCycle() }
         }
     }
 }

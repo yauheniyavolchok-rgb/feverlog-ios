@@ -1,8 +1,11 @@
 import Foundation
 import SwiftData
 
-/// v1 uses identical permissions for all household members.
+/// v1 grants identical *data* permissions to every member — `owner` vs
+/// `member` only distinguishes who may generate invites and never gates
+/// access to household records themselves.
 enum HouseholdMemberRole: String, Codable, Sendable {
+    case owner
     case member
 }
 

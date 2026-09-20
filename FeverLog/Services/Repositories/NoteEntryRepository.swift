@@ -31,16 +31,19 @@ final class SwiftDataNoteEntryRepository: NoteEntryRepository {
         let entry = NoteEntry(child: child, text: text, recordedAt: recordedAt)
         context.insert(entry)
         try context.save()
+        SyncQueueTrigger.enqueue(entityType: "notes", entityID: entry.id, context: context)
         return entry
     }
 
     func update(_ entry: NoteEntry) throws {
         entry.updatedAt = .now
         try context.save()
+        SyncQueueTrigger.enqueue(entityType: "notes", entityID: entry.id, context: context)
     }
 
     func softDelete(_ entry: NoteEntry) throws {
         entry.markSoftDeleted()
         try context.save()
+        SyncQueueTrigger.enqueue(entityType: "notes", entityID: entry.id, context: context)
     }
 }

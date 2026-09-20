@@ -23,6 +23,7 @@ final class SwiftDataMedicationLogRepository: MedicationLogRepository {
     func create(_ log: MedicationLog) throws {
         context.insert(log)
         try context.save()
+        SyncQueueTrigger.enqueue(entityType: "medication_logs", entityID: log.id, context: context)
     }
 
     func fetchAll(for child: Child) throws -> [MedicationLog] {
@@ -38,10 +39,12 @@ final class SwiftDataMedicationLogRepository: MedicationLogRepository {
     func update(_ log: MedicationLog) throws {
         log.updatedAt = .now
         try context.save()
+        SyncQueueTrigger.enqueue(entityType: "medication_logs", entityID: log.id, context: context)
     }
 
     func softDelete(_ log: MedicationLog) throws {
         log.markSoftDeleted()
         try context.save()
+        SyncQueueTrigger.enqueue(entityType: "medication_logs", entityID: log.id, context: context)
     }
 }

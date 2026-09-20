@@ -36,6 +36,18 @@ struct SettingsScreen: View {
                 }
                 .accessibilityIdentifier("settings.reminders")
             }
+
+            Section {
+                NavigationLink(L10n.Account.title) {
+                    AccountScreen()
+                }
+                .accessibilityIdentifier("settings.account")
+
+                NavigationLink(L10n.SyncStatus.title) {
+                    SyncStatusScreen()
+                }
+                .accessibilityIdentifier("settings.syncStatus")
+            }
         }
         .navigationTitle(L10n.Nav.settings)
     }

@@ -23,6 +23,7 @@ final class SwiftDataWeightHistoryRepository: WeightHistoryRepository {
         let entry = WeightHistory(child: child, weight: weight, unit: unit, effectiveDate: effectiveDate)
         context.insert(entry)
         try context.save()
+        SyncQueueTrigger.enqueue(entityType: "weight_history", entityID: entry.id, context: context)
         return entry
     }
 

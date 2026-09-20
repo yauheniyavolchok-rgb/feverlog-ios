@@ -22,6 +22,9 @@ settings:
 packages:
   FeverLogEngine:
     path: FeverLogEngine
+  Supabase:
+    url: https://github.com/supabase/supabase-swift
+    exactVersion: 2.55.2
 
 targets:
   FeverLog:
@@ -35,6 +38,11 @@ targets:
     dependencies:
       - package: FeverLogEngine
         product: FeverLogEngine
+      - package: Supabase
+        product: Supabase
+    configFiles:
+      Debug: Config/Base.xcconfig
+      Release: Config/Base.xcconfig
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.drbaby.feverlog
@@ -45,6 +53,7 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         SWIFT_EMIT_LOC_STRINGS: YES
+        CODE_SIGN_ENTITLEMENTS: FeverLog/FeverLog.entitlements
     info:
       path: FeverLog/Info.plist
       properties:
@@ -52,6 +61,11 @@ targets:
         CFBundleDevelopmentRegion: en
         UILaunchScreen: {}
         NSHumanReadableCopyright: ""
+        SupabaseURL: $(SUPABASE_URL)
+        SupabaseAnonKey: $(SUPABASE_ANON_KEY)
+        CFBundleURLTypes:
+          - CFBundleURLSchemes:
+              - com.drbaby.feverlog
 
   FeverLogTests:
     type: bundle.unit-test

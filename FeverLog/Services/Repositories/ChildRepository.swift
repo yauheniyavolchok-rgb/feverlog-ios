@@ -47,16 +47,19 @@ final class SwiftDataChildRepository: ChildRepository {
         )
         context.insert(child)
         try context.save()
+        SyncQueueTrigger.enqueue(entityType: "children", entityID: child.id, context: context)
         return child
     }
 
     func update(_ child: Child) throws {
         child.updatedAt = .now
         try context.save()
+        SyncQueueTrigger.enqueue(entityType: "children", entityID: child.id, context: context)
     }
 
     func softDelete(_ child: Child) throws {
         child.markSoftDeleted()
         try context.save()
+        SyncQueueTrigger.enqueue(entityType: "children", entityID: child.id, context: context)
     }
 }

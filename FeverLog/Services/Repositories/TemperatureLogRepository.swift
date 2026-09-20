@@ -50,16 +50,19 @@ final class SwiftDataTemperatureLogRepository: TemperatureLogRepository {
         )
         context.insert(log)
         try context.save()
+        SyncQueueTrigger.enqueue(entityType: "temperature_logs", entityID: log.id, context: context)
         return log
     }
 
     func update(_ log: TemperatureLog) throws {
         log.updatedAt = .now
         try context.save()
+        SyncQueueTrigger.enqueue(entityType: "temperature_logs", entityID: log.id, context: context)
     }
 
     func softDelete(_ log: TemperatureLog) throws {
         log.markSoftDeleted()
         try context.save()
+        SyncQueueTrigger.enqueue(entityType: "temperature_logs", entityID: log.id, context: context)
     }
 }
