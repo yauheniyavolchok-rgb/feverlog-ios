@@ -1,6 +1,7 @@
 import SwiftUI
 
-// TODO(Phase 3, onboarding illustrations): Replace illustration placeholders with final production assets.
+// TODO(Phase 3, onboarding illustrations): Replace remaining illustration placeholders
+// (family sharing, medication safety pages) with final production assets.
 // Completion: production assets replace placeholders and pass accessibility review.
 // Release blocker: no if the final design intentionally uses accessible text-only onboarding.
 struct OnboardingPageView: View {
@@ -11,10 +12,19 @@ struct OnboardingPageView: View {
     var body: some View {
         VStack(spacing: Spacing.lg) {
             Spacer()
-            Image(systemName: content.systemImage)
-                .font(.system(size: 64))
-                .foregroundStyle(palette.accentBlue)
-                .accessibilityHidden(true)
+            if let logoImageName = content.logoImageName {
+                Image(logoImageName)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 140, height: 140)
+                    .clipShape(RoundedRectangle(cornerRadius: CornerRadiusToken.lg, style: .continuous))
+                    .accessibilityHidden(true)
+            } else {
+                Image(systemName: content.systemImage)
+                    .font(.system(size: 64))
+                    .foregroundStyle(palette.accentBlue)
+                    .accessibilityHidden(true)
+            }
             Text(content.title)
                 .font(Typography.screenTitle)
                 .foregroundStyle(palette.primaryText)
