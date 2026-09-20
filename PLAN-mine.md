@@ -10,4 +10,5 @@ steps:
 5. Add scraper or compendium info (update possibilities? guidance per country or WHO?)
 6. Add protocol info (WHO or country? scrape or API? or manual update and versioning?) 
 7. Share to Dr.Baby clinic download link and QR
-8. celebrate ;) 
+8. Add function share with your doctor at Dr.Baby 
+9. celebrate ;) 
