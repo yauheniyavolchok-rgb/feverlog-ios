@@ -10,6 +10,15 @@ Log medicine
   - from cash
   - new one
 
+Log water intake (doctors notes)
+  - time and volume
+  - mb reminder
+Log pee or diaper change
+  - time
+  - volume
+  - color
+  - acetone test strip option
+
 See history or graph 
 
 Export to doctor or share with Clinic 
