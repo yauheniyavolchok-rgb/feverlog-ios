@@ -1,9 +1,6 @@
 import FeverLogEngine
 import SwiftUI
 
-// TODO(Phase 7, Quick Add symptoms/note): Enable Symptoms and Note options once those flows ship.
-// Completion: tapping either option opens its Phase 7 entry flow.
-// Release blocker: yes if either option remains visibly enabled but non-functional in a release.
 struct QuickAddSheet: View {
     @Environment(\.feverPalette) private var palette
     @Environment(\.dismiss) private var dismiss
@@ -15,6 +12,8 @@ struct QuickAddSheet: View {
     @State private var showingMedicationSearch = false
     @State private var showingMedicationDoseEntry = false
     @State private var selectedMedicationRule: MedicationRule?
+    @State private var showingSymptomEntry = false
+    @State private var showingNoteEntry = false
 
     var body: some View {
         NavigationStack {
@@ -38,16 +37,18 @@ struct QuickAddSheet: View {
                 quickAddOption(
                     title: L10n.QuickAdd.symptoms,
                     systemImage: "list.bullet.clipboard.fill",
-                    identifier: "quickAdd.symptoms",
-                    isEnabled: false
-                ) {}
+                    identifier: "quickAdd.symptoms"
+                ) {
+                    showingSymptomEntry = true
+                }
 
                 quickAddOption(
                     title: L10n.QuickAdd.note,
                     systemImage: "note.text",
-                    identifier: "quickAdd.note",
-                    isEnabled: false
-                ) {}
+                    identifier: "quickAdd.note"
+                ) {
+                    showingNoteEntry = true
+                }
 
                 Spacer()
             }
@@ -76,6 +77,18 @@ struct QuickAddSheet: View {
                         onLogged()
                         dismiss()
                     }
+                }
+            }
+            .navigationDestination(isPresented: $showingSymptomEntry) {
+                SymptomEntryScreen(child: child) {
+                    onLogged()
+                    dismiss()
+                }
+            }
+            .navigationDestination(isPresented: $showingNoteEntry) {
+                NoteEntryScreen(child: child) {
+                    onLogged()
+                    dismiss()
                 }
             }
         }

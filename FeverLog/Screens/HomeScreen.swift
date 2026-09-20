@@ -1,9 +1,6 @@
 import SwiftData
 import SwiftUI
 
-// TODO(Phase 4, Home symptom summary): Replace temporary symptom chips after Phase 7.
-// Completion: Home displays locally stored symptom information or an explicit empty state.
-// Release blocker: yes if placeholder symptom content remains visible in a release.
 struct HomeScreen: View {
     @Environment(ChildStore.self) private var childStore
     @Environment(\.modelContext) private var modelContext
@@ -14,6 +11,7 @@ struct HomeScreen: View {
     @State private var showingQuickAdd = false
     @State private var todayLogs: [TemperatureLog] = []
     @State private var todayMedicationLogs: [MedicationLog] = []
+    @State private var todaySymptomEntries: [SymptomEntry] = []
 
     var body: some View {
         Group {
@@ -69,6 +67,19 @@ struct HomeScreen: View {
                             } else {
                                 ForEach(todayMedicationLogs, id: \.id) { log in
                                     MedicationLogRow(log: log)
+                                }
+                            }
+                        }
+
+                        VStack(alignment: .leading, spacing: Spacing.sm) {
+                            SectionHeader(title: L10n.Home.symptomsTitle)
+                            if todaySymptomEntries.isEmpty {
+                                Text(L10n.Home.symptomsEmpty)
+                                    .font(Typography.body)
+                                    .foregroundStyle(palette.secondaryText)
+                            } else {
+                                ForEach(todaySymptomEntries, id: \.id) { entry in
+                                    SymptomEntryRow(entry: entry)
                                 }
                             }
                         }
@@ -169,6 +180,7 @@ struct HomeScreen: View {
         guard let child = childStore.selectedChild else {
             todayLogs = []
             todayMedicationLogs = []
+            todaySymptomEntries = []
             return
         }
         let calendar = Calendar.current
@@ -183,6 +195,12 @@ struct HomeScreen: View {
             todayMedicationLogs = allMedicationLogs.filter { calendar.isDateInToday($0.administeredAt) }
         } catch {
             todayMedicationLogs = []
+        }
+        do {
+            let allSymptomEntries = try SwiftDataSymptomEntryRepository(context: modelContext).fetchAll(for: child)
+            todaySymptomEntries = allSymptomEntries.filter { calendar.isDateInToday($0.recordedAt) }
+        } catch {
+            todaySymptomEntries = []
         }
     }
 }

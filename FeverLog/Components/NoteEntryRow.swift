@@ -1,15 +1,15 @@
 import SwiftUI
 
-struct MedicationLogRow: View {
+struct NoteEntryRow: View {
     @Environment(\.feverPalette) private var palette
 
-    let log: MedicationLog
+    let entry: NoteEntry
     var owner: Child?
 
     var body: some View {
         HStack(spacing: Spacing.sm) {
             RoundedRectangle(cornerRadius: CornerRadiusToken.sm, style: .continuous)
-                .fill(accentColor)
+                .fill(palette.accentPeach)
                 .frame(width: 4)
 
             if let owner {
@@ -20,14 +20,14 @@ struct MedicationLogRow: View {
             }
 
             VStack(alignment: .leading, spacing: Spacing.xs) {
-                Text(log.brandSnapshot)
-                    .font(Typography.body.weight(.semibold))
-                if let milligrams = log.calculatedMilligrams {
-                    Text(String(format: "%.1f mg", milligrams))
-                        .font(Typography.caption)
-                        .foregroundStyle(palette.secondaryText)
+                HStack(spacing: Spacing.xs) {
+                    Image(systemName: "note.text")
+                        .foregroundStyle(palette.accentPeach)
+                    Text(entry.text)
+                        .font(Typography.body.weight(.semibold))
+                        .lineLimit(2)
                 }
-                Text(log.administeredAt, style: .time)
+                Text(entry.recordedAt, style: .time)
                     .font(Typography.caption)
                     .foregroundStyle(palette.secondaryText)
             }
@@ -36,13 +36,5 @@ struct MedicationLogRow: View {
         .padding(Spacing.sm)
         .background(palette.surface)
         .clipShape(RoundedRectangle(cornerRadius: CornerRadiusToken.md, style: .continuous))
-    }
-
-    private var accentColor: Color {
-        switch log.calculationStatus {
-        case .calculated: palette.success
-        case .missingWeight, .missingRule: palette.warning
-        case .invalidInput: palette.danger
-        }
     }
 }

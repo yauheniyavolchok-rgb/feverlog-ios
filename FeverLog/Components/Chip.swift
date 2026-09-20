@@ -25,6 +25,7 @@ struct Chip: View {
             .foregroundStyle(palette.primaryText)
             .clipShape(Capsule())
         }
+        .buttonStyle(.plain)
         .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : [.isButton])
     }
 }

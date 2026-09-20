@@ -71,6 +71,8 @@ enum L10n {
         static var todayEmpty: String { String(localized: "home.today.empty") }
         static var medicationsTitle: String { String(localized: "home.medications.title") }
         static var medicationsEmpty: String { String(localized: "home.medications.empty") }
+        static var symptomsTitle: String { String(localized: "home.symptoms.title") }
+        static var symptomsEmpty: String { String(localized: "home.symptoms.empty") }
     }
 
     enum QuickAdd {
@@ -144,9 +146,11 @@ enum L10n {
         static var recentIllnessTitle: String { String(localized: "childProfile.recentIllness.title") }
         static var recentIllnessNoReadings: String { String(localized: "childProfile.recentIllness.noRecentReadings") }
 
-        static func recentIllnessElevated(_ count: Int, _ days: Int) -> String {
-            String(format: String(localized: "childProfile.recentIllness.elevated"), count, days)
-        }
+        static var insightSpikeCount: String { String(localized: "childProfile.insight.spikeCount") }
+        static var insightFeverDuration: String { String(localized: "childProfile.insight.feverDuration") }
+        static var insightFeverFreeInterval: String { String(localized: "childProfile.insight.feverFreeInterval") }
+        static var insightTemperatureChange: String { String(localized: "childProfile.insight.temperatureChange") }
+        static var insightInsufficientData: String { String(localized: "childProfile.insight.insufficientData") }
 
         static var editButton: String { String(localized: "childProfile.editButton") }
         static var deleteButton: String { String(localized: "childProfile.deleteButton") }
@@ -154,6 +158,35 @@ enum L10n {
         static var deleteConfirmMessage: String { String(localized: "childProfile.deleteConfirm.message") }
         static var deleteConfirmConfirm: String { String(localized: "childProfile.deleteConfirm.confirm") }
         static var deleteConfirmCancel: String { String(localized: "childProfile.deleteConfirm.cancel") }
+    }
+
+    enum Symptom {
+        static var breathing: String { String(localized: "symptom.breathing") }
+        static var digestive: String { String(localized: "symptom.digestive") }
+        static var pain: String { String(localized: "symptom.pain") }
+        static var behavior: String { String(localized: "symptom.behavior") }
+        static var hydration: String { String(localized: "symptom.hydration") }
+        static var sleep: String { String(localized: "symptom.sleep") }
+        static var skin: String { String(localized: "symptom.skin") }
+        static var general: String { String(localized: "symptom.general") }
+    }
+
+    enum SymptomEntry {
+        static var addTitle: String { String(localized: "symptomEntry.addTitle") }
+        static var editTitle: String { String(localized: "symptomEntry.editTitle") }
+        static var categoriesLabel: String { String(localized: "symptomEntry.categories.label") }
+        static var dateLabel: String { String(localized: "symptomEntry.date.label") }
+        static var save: String { String(localized: "symptomEntry.save") }
+        static var cancel: String { String(localized: "symptomEntry.cancel") }
+    }
+
+    enum NoteEntry {
+        static var addTitle: String { String(localized: "noteEntry.addTitle") }
+        static var editTitle: String { String(localized: "noteEntry.editTitle") }
+        static var textLabel: String { String(localized: "noteEntry.text.label") }
+        static var dateLabel: String { String(localized: "noteEntry.date.label") }
+        static var save: String { String(localized: "noteEntry.save") }
+        static var cancel: String { String(localized: "noteEntry.cancel") }
     }
 
     enum MedicationSearch {

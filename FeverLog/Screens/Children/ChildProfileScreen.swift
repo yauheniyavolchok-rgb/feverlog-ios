@@ -11,7 +11,7 @@ struct ChildProfileScreen: View {
 
     @State private var activeWeight: WeightHistory?
     @State private var weightHistory: [WeightHistory] = []
-    @State private var illnessSummary: RecentIllnessSummary = .noRecentReadings
+    @State private var insights: ChildFeverInsightsSummary?
     @State private var showingEditForm = false
     @State private var showingAddWeight = false
     @State private var showingDeleteConfirmation = false
@@ -64,8 +64,7 @@ struct ChildProfileScreen: View {
             }
 
             Section(L10n.ChildProfile.recentIllnessTitle) {
-                Text(illnessSummaryText)
-                    .foregroundStyle(palette.secondaryText)
+                insightsContent
             }
 
             Section {
@@ -115,13 +114,45 @@ struct ChildProfileScreen: View {
         return String(format: "%.1f %@", activeWeight.weight, activeWeight.unit.rawValue)
     }
 
-    private var illnessSummaryText: String {
-        switch illnessSummary {
-        case .noRecentReadings:
-            L10n.ChildProfile.recentIllnessNoReadings
-        case .elevatedReadings(let count, let days):
-            L10n.ChildProfile.recentIllnessElevated(count, days)
+    @ViewBuilder
+    private var insightsContent: some View {
+        if let insights, insights.hasAnyReadings {
+            insightRow(L10n.ChildProfile.insightSpikeCount, value: "\(insights.spikeCount)")
+            insightRow(L10n.ChildProfile.insightFeverDuration, value: durationText(insights.totalFeverDuration))
+            insightRow(
+                L10n.ChildProfile.insightFeverFreeInterval,
+                value: insights.longestFeverFreeInterval.map(durationText) ?? L10n.ChildProfile.insightInsufficientData
+            )
+            insightRow(
+                L10n.ChildProfile.insightTemperatureChange,
+                value: insights.temperatureChangeOverFourHours.map(changeText) ?? L10n.ChildProfile.insightInsufficientData
+            )
+        } else {
+            Text(L10n.ChildProfile.recentIllnessNoReadings)
+                .foregroundStyle(palette.secondaryText)
         }
+    }
+
+    private func insightRow(_ label: String, value: String) -> some View {
+        HStack {
+            Text(label)
+                .foregroundStyle(palette.primaryText)
+            Spacer()
+            Text(value)
+                .foregroundStyle(palette.secondaryText)
+        }
+    }
+
+    private func durationText(_ interval: TimeInterval) -> String {
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.day, .hour, .minute]
+        formatter.unitsStyle = .abbreviated
+        formatter.maximumUnitCount = 2
+        return formatter.string(from: interval) ?? "0m"
+    }
+
+    private func changeText(_ change: Double) -> String {
+        String(format: "%+.1f°C", change)
     }
 
     private func onEditFormDismissed() {
@@ -134,8 +165,8 @@ struct ChildProfileScreen: View {
             activeWeight = try weightRepository.activeWeight(for: child, at: .now)
             weightHistory = try weightRepository.fetchHistory(for: child)
 
-            let illnessProvider = SwiftDataRecentIllnessSummaryProvider(context: modelContext)
-            illnessSummary = try illnessProvider.summary(for: child, withinDays: 7)
+            let insightsProvider = SwiftDataChildFeverInsightsProvider(context: modelContext)
+            insights = try insightsProvider.summary(for: child, withinDays: 30)
         } catch {
             // Non-fatal: leave prior state, surfaced only via empty/missing states.
         }

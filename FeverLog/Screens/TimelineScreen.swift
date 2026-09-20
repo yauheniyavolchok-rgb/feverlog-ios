@@ -1,3 +1,4 @@
+import FeverLogEngine
 import SwiftData
 import SwiftUI
 
@@ -15,28 +16,74 @@ enum TimelineSortMode: String, CaseIterable, Identifiable {
     }
 }
 
+/// One row's worth of timeline content, regardless of which underlying
+/// SwiftData record it came from. Cards distinguish entry types by icon and
+/// accent color together — never color alone.
+enum TimelineItemKind {
+    case temperature(TemperatureLog)
+    case medication(MedicationLog)
+    case symptom(SymptomEntry)
+    case note(NoteEntry)
+}
+
+struct TimelineItem: Identifiable {
+    let child: Child
+    let date: Date
+    let kind: TimelineItemKind
+
+    var id: UUID {
+        switch kind {
+        case .temperature(let log): log.id
+        case .medication(let log): log.id
+        case .symptom(let entry): entry.id
+        case .note(let entry): entry.id
+        }
+    }
+}
+
+enum TimelineEditTarget: Identifiable, Hashable {
+    case temperature(TemperatureLog, Child)
+    case medication(MedicationLog, MedicationRule, Child)
+    case symptom(SymptomEntry, Child)
+    case note(NoteEntry, Child)
+
+    var id: UUID {
+        switch self {
+        case .temperature(let log, _): log.id
+        case .medication(let log, _, _): log.id
+        case .symptom(let entry, _): entry.id
+        case .note(let entry, _): entry.id
+        }
+    }
+
+    static func == (lhs: TimelineEditTarget, rhs: TimelineEditTarget) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+}
+
 struct TimelineScreen: View {
     @Environment(ChildStore.self) private var childStore
     @Environment(\.modelContext) private var modelContext
     @Environment(\.feverPalette) private var palette
 
-    @State private var logsByChildID: [UUID: [TemperatureLog]] = [:]
+    @State private var items: [TimelineItem] = []
+    @State private var medications: [MedicationRule] = []
     @State private var sortMode: TimelineSortMode = .time
-    @State private var editingLog: TemperatureLog?
-    @State private var showingEditScreen = false
+    @State private var editTarget: TimelineEditTarget?
 
-    private var allLogs: [TemperatureLog] {
-        logsByChildID.values.flatMap { $0 }
+    private var dayGroups: [TimelineDayGroup<TimelineItem>] {
+        TimelineGrouping.groupByDay(items, date: \.date)
     }
 
-    private var dayGroups: [TimelineDayGroup<TemperatureLog>] {
-        TimelineGrouping.groupByDay(allLogs, date: \.recordedAt)
-    }
-
-    private var childGroups: [(child: Child, logs: [TemperatureLog])] {
+    private var childGroups: [(child: Child, items: [TimelineItem])] {
         childStore.children.compactMap { child in
-            guard let logs = logsByChildID[child.id], !logs.isEmpty else { return nil }
-            return (child, logs.sorted { $0.recordedAt > $1.recordedAt })
+            let childItems = items.filter { $0.child.id == child.id }.sorted { $0.date > $1.date }
+            guard !childItems.isEmpty else { return nil }
+            return (child, childItems)
         }
     }
 
@@ -49,7 +96,7 @@ struct TimelineScreen: View {
                     title: L10n.Screens.timelineTitle,
                     message: L10n.Screens.timelinePlaceholderMessage
                 )
-            } else if allLogs.isEmpty {
+            } else if items.isEmpty {
                 EmptyStateView(
                     systemImage: Icon.timeline,
                     title: L10n.Timeline.emptyTitle,
@@ -62,16 +109,16 @@ struct TimelineScreen: View {
                     if sortMode == .time {
                         ForEach(dayGroups) { group in
                             Section(header: Text(dayLabel(for: group.day))) {
-                                ForEach(group.items, id: \.id) { log in
-                                    row(for: log, owner: log.child)
+                                ForEach(group.items) { item in
+                                    row(for: item, showOwner: true)
                                 }
                             }
                         }
                     } else {
                         ForEach(childGroups, id: \.child.id) { group in
                             Section(header: childSectionHeader(group.child)) {
-                                ForEach(group.logs, id: \.id) { log in
-                                    row(for: log, owner: nil)
+                                ForEach(group.items) { item in
+                                    row(for: item, showOwner: false)
                                 }
                             }
                         }
@@ -82,7 +129,7 @@ struct TimelineScreen: View {
         }
         .navigationTitle(L10n.Nav.timeline)
         .toolbar {
-            if !allLogs.isEmpty {
+            if !items.isEmpty {
                 ToolbarItem(placement: .principal) {
                     Picker(L10n.Timeline.sortLabel, selection: $sortMode) {
                         ForEach(TimelineSortMode.allCases) { mode in
@@ -95,34 +142,68 @@ struct TimelineScreen: View {
             }
         }
         .task(id: childStore.children.map(\.id)) { await reload() }
-        .navigationDestination(isPresented: $showingEditScreen) {
-            if let editingLog, let child = editingLog.child {
-                TemperatureEntryScreen(child: child, existingLog: editingLog) {
-                    Task { await reload() }
-                }
+        .navigationDestination(item: $editTarget) { target in
+            editDestination(for: target)
+        }
+    }
+
+    private var swipeActions: TimelineSwipeActions {
+        TimelineSwipeActions(
+            modelContext: modelContext,
+            palette: palette,
+            medications: medications,
+            onReload: { Task { await reload() } },
+            onEdit: { editTarget = $0 }
+        )
+    }
+
+    @ViewBuilder
+    private func row(for item: TimelineItem, showOwner: Bool) -> some View {
+        let owner = showOwner ? item.child : nil
+        let actions = swipeActions
+        switch item.kind {
+        case .temperature(let log):
+            TemperatureLogRow(log: log, owner: owner)
+                .listRowSeparator(.hidden)
+                .swipeActions(edge: .trailing) { actions.temperature(log, child: item.child) }
+        case .medication(let log):
+            MedicationLogRow(log: log, owner: owner)
+                .listRowSeparator(.hidden)
+                .swipeActions(edge: .trailing) { actions.medication(log, child: item.child) }
+        case .symptom(let entry):
+            SymptomEntryRow(entry: entry, owner: owner)
+                .listRowSeparator(.hidden)
+                .swipeActions(edge: .trailing) { actions.symptom(entry, child: item.child) }
+        case .note(let entry):
+            NoteEntryRow(entry: entry, owner: owner)
+                .listRowSeparator(.hidden)
+                .swipeActions(edge: .trailing) { actions.note(entry, child: item.child) }
+        }
+    }
+
+    @ViewBuilder
+    private func editDestination(for target: TimelineEditTarget) -> some View {
+        switch target {
+        case .temperature(let log, let child):
+            TemperatureEntryScreen(child: child, existingLog: log) {
+                Task { await reload() }
+            }
+        case .medication(let log, let rule, let child):
+            MedicationDoseEntryScreen(child: child, rule: rule, existingLog: log) {
+                Task { await reload() }
+            }
+        case .symptom(let entry, let child):
+            SymptomEntryScreen(child: child, existingEntry: entry) {
+                Task { await reload() }
+            }
+        case .note(let entry, let child):
+            NoteEntryScreen(child: child, existingEntry: entry) {
+                Task { await reload() }
             }
         }
     }
 
-    private func row(for log: TemperatureLog, owner: Child?) -> some View {
-        TemperatureLogRow(log: log, owner: owner)
-            .listRowSeparator(.hidden)
-            .swipeActions(edge: .trailing) {
-                Button(role: .destructive) { delete(log) } label: {
-                    Label(L10n.Timeline.delete, systemImage: "trash")
-                }
-                Button { duplicate(log) } label: {
-                    Label(L10n.Timeline.duplicate, systemImage: "plus.square.on.square")
-                }
-                .tint(palette.accentBlue)
-                Button {
-                    beginEditing(log)
-                } label: {
-                    Label(L10n.Timeline.edit, systemImage: "pencil")
-                }
-                .tint(palette.accentLavender)
-            }
-    }
+    // MARK: - Section headers / labels
 
     private func childSectionHeader(_ child: Child) -> some View {
         HStack(spacing: Spacing.xs) {
@@ -132,11 +213,6 @@ struct TimelineScreen: View {
         }
     }
 
-    private func beginEditing(_ log: TemperatureLog) {
-        editingLog = log
-        showingEditScreen = true
-    }
-
     private func dayLabel(for day: Date) -> String {
         let calendar = Calendar.current
         if calendar.isDateInToday(day) { return L10n.Timeline.today }
@@ -144,38 +220,38 @@ struct TimelineScreen: View {
         return day.formatted(.dateTime.month(.wide).day().year())
     }
 
+    // MARK: - Data loading
+
     private func reload() async {
-        let repository = SwiftDataTemperatureLogRepository(context: modelContext)
-        var result: [UUID: [TemperatureLog]] = [:]
+        medications = MedicationCatalog.loadBundled()
+
+        let temperatureRepository = SwiftDataTemperatureLogRepository(context: modelContext)
+        let medicationRepository = SwiftDataMedicationLogRepository(context: modelContext)
+        let symptomRepository = SwiftDataSymptomEntryRepository(context: modelContext)
+        let noteRepository = SwiftDataNoteEntryRepository(context: modelContext)
+
+        var result: [TimelineItem] = []
         for child in childStore.children {
-            result[child.id] = (try? repository.fetchAll(for: child)) ?? []
-        }
-        logsByChildID = result
-    }
+            let temperatureLogs = (try? temperatureRepository.fetchAll(for: child)) ?? []
+            result.append(contentsOf: temperatureLogs.map {
+                TimelineItem(child: child, date: $0.recordedAt, kind: .temperature($0))
+            })
 
-    private func duplicate(_ log: TemperatureLog) {
-        guard let child = log.child else { return }
-        do {
-            let repository = SwiftDataTemperatureLogRepository(context: modelContext)
-            _ = try repository.create(
-                temperatureCelsius: log.temperatureCelsius,
-                measurementMethod: log.measurementMethod,
-                recordedAt: .now,
-                note: log.note,
-                child: child
-            )
-            Task { await reload() }
-        } catch {
-            // Non-fatal: the row remains as-is if duplication fails.
-        }
-    }
+            let medicationLogs = (try? medicationRepository.fetchAll(for: child)) ?? []
+            result.append(contentsOf: medicationLogs.map {
+                TimelineItem(child: child, date: $0.administeredAt, kind: .medication($0))
+            })
 
-    private func delete(_ log: TemperatureLog) {
-        do {
-            try SwiftDataTemperatureLogRepository(context: modelContext).softDelete(log)
-            Task { await reload() }
-        } catch {
-            // Non-fatal: the row remains as-is if deletion fails.
+            let symptomEntries = (try? symptomRepository.fetchAll(for: child)) ?? []
+            result.append(contentsOf: symptomEntries.map {
+                TimelineItem(child: child, date: $0.recordedAt, kind: .symptom($0))
+            })
+
+            let noteEntries = (try? noteRepository.fetchAll(for: child)) ?? []
+            result.append(contentsOf: noteEntries.map {
+                TimelineItem(child: child, date: $0.recordedAt, kind: .note($0))
+            })
         }
+        items = result
     }
 }

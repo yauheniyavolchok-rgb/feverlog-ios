@@ -66,6 +66,34 @@ final class ChildProfileUITests: XCTestCase {
     }
 
     @MainActor
+    func testInsightsShowNoReadingsStateWhenChildHasNoTemperatureHistory() throws {
+        let app = XCUIApplication().launchFreshPastOnboarding()
+        app.createChild(named: "Ava", fromEmptyState: true)
+
+        app.buttons["home.childCard"].tap()
+
+        XCTAssertTrue(app.staticTexts["No recent temperature readings logged"].waitForExistence(timeout: 5))
+    }
+
+    @MainActor
+    func testInsightsAppearAfterLoggingAFeverReading() throws {
+        let app = XCUIApplication().launchFreshPastOnboarding()
+        app.createChild(named: "Ava", fromEmptyState: true)
+
+        app.buttons["home.quickAdd"].tap()
+        app.buttons["quickAdd.temperature"].tap()
+        let picker = app.pickerWheels.element
+        XCTAssertTrue(picker.waitForExistence(timeout: 5))
+        picker.adjust(toPickerWheelValue: "38.5°C")
+        app.buttons["temperatureEntry.save"].tap()
+
+        app.buttons["home.childCard"].tap()
+
+        XCTAssertTrue(app.staticTexts["Fever spikes (last 30 days)"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["1"].exists)
+    }
+
+    @MainActor
     func testSoftDeleteChildExcludesItFromSelector() throws {
         let app = XCUIApplication().launchFreshPastOnboarding()
         app.createChild(named: "Ava", fromEmptyState: true)
