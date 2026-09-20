@@ -1,12 +1,13 @@
 # FeverLog
 
-A local-first iOS app for tracking a child's fever, temperature history, and
-medication doses — with a deterministic, offline-capable medication safety
-engine and optional household sync.
+A home-brewed, local-first iOS app for tracking a child's fever, temperature
+history, and medication doses — with a deterministic, offline-capable
+medication safety engine and optional household sync. Built for free
+distribution in Dr.Baby clinics.
 
-> **Status:** Phase 0 (Project Foundation) — the app builds and launches, but
-> no product features are implemented yet. See [ROADMAP.md](ROADMAP.md) for
-> the phased delivery plan.
+> **Status:** Phases 0-4 complete (project foundation, design system, local
+> data model, onboarding/guest mode, temperature logging & timeline). See
+> [ROADMAP.md](ROADMAP.md) for the phased delivery plan.
 
 ## Requirements
 
