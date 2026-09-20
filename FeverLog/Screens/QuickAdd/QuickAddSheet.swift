@@ -1,8 +1,6 @@
+import FeverLogEngine
 import SwiftUI
 
-// TODO(Phase 6, Quick Add medication): Enable the Medication option once medication logging ships.
-// Completion: tapping Medication opens the Phase 6 medication entry flow.
-// Release blocker: yes if the option remains visibly enabled but non-functional in a release.
 // TODO(Phase 7, Quick Add symptoms/note): Enable Symptoms and Note options once those flows ship.
 // Completion: tapping either option opens its Phase 7 entry flow.
 // Release blocker: yes if either option remains visibly enabled but non-functional in a release.
@@ -11,9 +9,12 @@ struct QuickAddSheet: View {
     @Environment(\.dismiss) private var dismiss
 
     let child: Child
-    let onLoggedTemperature: () -> Void
+    let onLogged: () -> Void
 
     @State private var showingTemperatureEntry = false
+    @State private var showingMedicationSearch = false
+    @State private var showingMedicationDoseEntry = false
+    @State private var selectedMedicationRule: MedicationRule?
 
     var body: some View {
         NavigationStack {
@@ -29,9 +30,10 @@ struct QuickAddSheet: View {
                 quickAddOption(
                     title: L10n.QuickAdd.medication,
                     systemImage: "cross.case.fill",
-                    identifier: "quickAdd.medication",
-                    isEnabled: false
-                ) {}
+                    identifier: "quickAdd.medication"
+                ) {
+                    showingMedicationSearch = true
+                }
 
                 quickAddOption(
                     title: L10n.QuickAdd.symptoms,
@@ -58,8 +60,22 @@ struct QuickAddSheet: View {
             }
             .navigationDestination(isPresented: $showingTemperatureEntry) {
                 TemperatureEntryScreen(child: child) {
-                    onLoggedTemperature()
+                    onLogged()
                     dismiss()
+                }
+            }
+            .navigationDestination(isPresented: $showingMedicationSearch) {
+                MedicationSearchScreen { rule in
+                    selectedMedicationRule = rule
+                    showingMedicationDoseEntry = true
+                }
+            }
+            .navigationDestination(isPresented: $showingMedicationDoseEntry) {
+                if let selectedMedicationRule {
+                    MedicationDoseEntryScreen(child: child, rule: selectedMedicationRule) {
+                        onLogged()
+                        dismiss()
+                    }
                 }
             }
         }

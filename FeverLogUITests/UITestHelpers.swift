@@ -25,13 +25,20 @@ extension XCUIApplication {
 }
 
 extension XCUIElement {
+    /// Clears a text field before typing. Tapping a SwiftUI `TextField`
+    /// reliably leaves the cursor at the *start* of its existing text
+    /// rather than the end (confirmed via diagnostics), which makes a
+    /// delete-key-based clear a no-op — nothing precedes the cursor, so new
+    /// digits get prepended instead of replacing the old value. A hardware-
+    /// keyboard-style Select All (⌘A) selects the field's full contents
+    /// regardless of cursor position, so the following `typeText` reliably
+    /// replaces it.
     func clearAndTypeText(_ text: String) {
-        guard let stringValue = value as? String else {
-            typeText(text)
-            return
+        let selectAll = XCUIApplication().menuItems["Select All"]
+        press(forDuration: 1.2)
+        if selectAll.waitForExistence(timeout: 2) {
+            selectAll.tap()
         }
-        let deleteString = String(repeating: XCUIKeyboardKey.delete.rawValue, count: stringValue.count)
-        typeText(deleteString)
         typeText(text)
     }
 }

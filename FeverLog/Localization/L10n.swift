@@ -69,6 +69,8 @@ enum L10n {
         static var noReadingsYet: String { String(localized: "home.noReadingsYet") }
         static var todayTitle: String { String(localized: "home.today.title") }
         static var todayEmpty: String { String(localized: "home.today.empty") }
+        static var medicationsTitle: String { String(localized: "home.medications.title") }
+        static var medicationsEmpty: String { String(localized: "home.medications.empty") }
     }
 
     enum QuickAdd {
@@ -147,6 +149,47 @@ enum L10n {
         static var deleteConfirmMessage: String { String(localized: "childProfile.deleteConfirm.message") }
         static var deleteConfirmConfirm: String { String(localized: "childProfile.deleteConfirm.confirm") }
         static var deleteConfirmCancel: String { String(localized: "childProfile.deleteConfirm.cancel") }
+    }
+
+    enum MedicationSearch {
+        static var title: String { String(localized: "medicationSearch.title") }
+        static var searchPlaceholder: String { String(localized: "medicationSearch.searchPlaceholder") }
+        static var emptyTitle: String { String(localized: "medicationSearch.empty.title") }
+        static var emptyMessage: String { String(localized: "medicationSearch.empty.message") }
+    }
+
+    enum MedicationEntry {
+        static var addTitle: String { String(localized: "medicationEntry.addTitle") }
+        static var editTitle: String { String(localized: "medicationEntry.editTitle") }
+        static var volumeLabel: String { String(localized: "medicationEntry.volume.label") }
+        static var dateLabel: String { String(localized: "medicationEntry.date.label") }
+        static var calculationTitle: String { String(localized: "medicationEntry.calculation.title") }
+        static var milligramsLabel: String { String(localized: "medicationEntry.milligrams.label") }
+        static var milligramsPerKilogramLabel: String { String(localized: "medicationEntry.milligramsPerKilogram.label") }
+        static var recommendedRangeLabel: String { String(localized: "medicationEntry.recommendedRange.label") }
+        static var safetyTitle: String { String(localized: "medicationEntry.safety.title") }
+        static var save: String { String(localized: "medicationEntry.save") }
+        static var cancel: String { String(localized: "medicationEntry.cancel") }
+        static var confirmTitle: String { String(localized: "medicationEntry.confirm.title") }
+        static var confirmMessage: String { String(localized: "medicationEntry.confirm.message") }
+        static var confirmSave: String { String(localized: "medicationEntry.confirm.save") }
+        static var confirmCancel: String { String(localized: "medicationEntry.confirm.cancel") }
+    }
+
+    enum MedicationSafety {
+        static var disclaimer: String { String(localized: "medicationSafety.disclaimer") }
+        static var rollingTotalLabel: String { String(localized: "medicationSafety.rollingTotal.label") }
+        static var doseCountLabel: String { String(localized: "medicationSafety.doseCount.label") }
+        static var nextEligibleLabel: String { String(localized: "medicationSafety.nextEligible.label") }
+
+        static var statusNormal: String { String(localized: "medicationSafety.status.normal") }
+        static var statusMissingWeight: String { String(localized: "medicationSafety.status.missingWeight") }
+        static var statusMissingRule: String { String(localized: "medicationSafety.status.missingRule") }
+        static var statusIntervalWarning: String { String(localized: "medicationSafety.status.intervalWarning") }
+        static var statusApproachingMaximum: String { String(localized: "medicationSafety.status.approachingMaximum") }
+        static var statusUnusualDose: String { String(localized: "medicationSafety.status.unusualDose") }
+        static var statusMaximumExceeded: String { String(localized: "medicationSafety.status.maximumExceeded") }
+        static var statusInvalidInput: String { String(localized: "medicationSafety.status.invalidInput") }
     }
 
     enum WeightForm {

@@ -353,6 +353,28 @@
         }
       }
     },
+    "home.medications.empty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No medication logged today"
+          }
+        }
+      }
+    },
+    "home.medications.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Medications"
+          }
+        }
+      }
+    },
     "home.today.title" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -415,6 +437,347 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "My Household"
+          }
+        }
+      }
+    },
+    "medicationEntry.addTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Log Medication"
+          }
+        }
+      }
+    },
+    "medicationEntry.calculation.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calculated Dose"
+          }
+        }
+      }
+    },
+    "medicationEntry.cancel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        }
+      }
+    },
+    "medicationEntry.confirm.cancel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        }
+      }
+    },
+    "medicationEntry.confirm.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review the safety findings above before continuing. This is not medical advice — verify against the product label or a qualified professional if you're unsure."
+          }
+        }
+      }
+    },
+    "medicationEntry.confirm.save" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save Anyway"
+          }
+        }
+      }
+    },
+    "medicationEntry.confirm.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check this dose before saving"
+          }
+        }
+      }
+    },
+    "medicationEntry.date.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date & Time"
+          }
+        }
+      }
+    },
+    "medicationEntry.editTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit Medication"
+          }
+        }
+      }
+    },
+    "medicationEntry.milligrams.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Milligrams"
+          }
+        }
+      }
+    },
+    "medicationEntry.milligramsPerKilogram.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mg / kg"
+          }
+        }
+      }
+    },
+    "medicationEntry.recommendedRange.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recommended range"
+          }
+        }
+      }
+    },
+    "medicationEntry.safety.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Safety Check"
+          }
+        }
+      }
+    },
+    "medicationEntry.save" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save"
+          }
+        }
+      }
+    },
+    "medicationEntry.volume.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Volume (mL)"
+          }
+        }
+      }
+    },
+    "medicationSafety.disclaimer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This calculation is based on the configured rule and is not medical advice. Always verify against the product label or a qualified professional."
+          }
+        }
+      }
+    },
+    "medicationSafety.doseCount.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doses in last 24h"
+          }
+        }
+      }
+    },
+    "medicationSafety.nextEligible.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next typical dose"
+          }
+        }
+      }
+    },
+    "medicationSafety.rollingTotal.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Total in last 24h"
+          }
+        }
+      }
+    },
+    "medicationSafety.status.approachingMaximum" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This amount is approaching the configured daily maximum."
+          }
+        }
+      }
+    },
+    "medicationSafety.status.intervalWarning" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The minimum interval since the last dose has not elapsed."
+          }
+        }
+      }
+    },
+    "medicationSafety.status.invalidInput" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter a valid volume to calculate this dose."
+          }
+        }
+      }
+    },
+    "medicationSafety.status.maximumExceeded" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This amount exceeds the configured rule. Verify the product label and contact a qualified professional if needed."
+          }
+        }
+      }
+    },
+    "medicationSafety.status.missingRule" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No configured rule is available for this medication. Verify the product label before recording it."
+          }
+        }
+      }
+    },
+    "medicationSafety.status.missingWeight" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A weight for this administration time is not available, so mg/kg could not be calculated."
+          }
+        }
+      }
+    },
+    "medicationSafety.status.normal" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Within the configured range."
+          }
+        }
+      }
+    },
+    "medicationSafety.status.unusualDose" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This single dose is outside the recommended range."
+          }
+        }
+      }
+    },
+    "medicationSearch.empty.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try a different brand or active ingredient."
+          }
+        }
+      }
+    },
+    "medicationSearch.empty.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No medications found"
+          }
+        }
+      }
+    },
+    "medicationSearch.searchPlaceholder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search brand or ingredient"
+          }
+        }
+      }
+    },
+    "medicationSearch.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add Medication"
           }
         }
       }

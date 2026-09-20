@@ -17,11 +17,17 @@ final class MedicationLog {
     var childID: UUID
     var child: Child?
 
-    var medicationDefinitionID: UUID?
+    /// The bundled/reference medication's stable string identifier (see
+    /// `FeverLogEngine.MedicationRule.id`) — not a locally generated UUID,
+    /// since reference medications are identified by stable content keys.
+    var medicationDefinitionID: String?
 
     // Snapshots — captured once at administration time, never re-derived.
     var activeIngredientSnapshot: String
+    /// Milligrams (X) in the "X mg / Y mL" concentration printed on the label.
     var concentrationValueSnapshot: Double
+    /// Milliliters (Y) in the "X mg / Y mL" concentration printed on the label.
+    var concentrationMillilitersSnapshot: Double
     var concentrationUnitSnapshot: String
     var formSnapshot: String
     var brandSnapshot: String
@@ -46,9 +52,10 @@ final class MedicationLog {
     init(
         id: UUID = UUID(),
         child: Child,
-        medicationDefinitionID: UUID?,
+        medicationDefinitionID: String?,
         activeIngredientSnapshot: String,
         concentrationValueSnapshot: Double,
+        concentrationMillilitersSnapshot: Double,
         concentrationUnitSnapshot: String,
         formSnapshot: String,
         brandSnapshot: String,
@@ -70,6 +77,7 @@ final class MedicationLog {
         self.medicationDefinitionID = medicationDefinitionID
         self.activeIngredientSnapshot = activeIngredientSnapshot
         self.concentrationValueSnapshot = concentrationValueSnapshot
+        self.concentrationMillilitersSnapshot = concentrationMillilitersSnapshot
         self.concentrationUnitSnapshot = concentrationUnitSnapshot
         self.formSnapshot = formSnapshot
         self.brandSnapshot = brandSnapshot

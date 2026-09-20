@@ -176,13 +176,14 @@ struct PersistenceTests {
             household: household
         )
 
-        let definitionID = UUID()
+        let definitionID = "acetaminophen-childrens-tylenol-160-5-suspension-example"
         let log = MedicationLog(
             child: child,
             medicationDefinitionID: definitionID,
             activeIngredientSnapshot: "Acetaminophen",
             concentrationValueSnapshot: 160,
-            concentrationUnitSnapshot: "mg/5mL",
+            concentrationMillilitersSnapshot: 5,
+            concentrationUnitSnapshot: "mg/mL",
             formSnapshot: "suspension",
             brandSnapshot: "Children's Tylenol",
             ruleVersionSnapshot: "v1",

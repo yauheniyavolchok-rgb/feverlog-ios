@@ -1,9 +1,6 @@
 import SwiftData
 import SwiftUI
 
-// TODO(Phase 4, Home medication summary): Replace temporary medication countdown content after Phase 6.
-// Completion: Home displays medication information derived from local medication records and the safety engine.
-// Release blocker: yes if placeholder medication content remains visible in a release.
 // TODO(Phase 4, Home symptom summary): Replace temporary symptom chips after Phase 7.
 // Completion: Home displays locally stored symptom information or an explicit empty state.
 // Release blocker: yes if placeholder symptom content remains visible in a release.
@@ -16,6 +13,7 @@ struct HomeScreen: View {
     @State private var showingAddChild = false
     @State private var showingQuickAdd = false
     @State private var todayLogs: [TemperatureLog] = []
+    @State private var todayMedicationLogs: [MedicationLog] = []
 
     var body: some View {
         Group {
@@ -60,6 +58,19 @@ struct HomeScreen: View {
                                 }
                             }
                         }
+
+                        VStack(alignment: .leading, spacing: Spacing.sm) {
+                            SectionHeader(title: L10n.Home.medicationsTitle)
+                            if todayMedicationLogs.isEmpty {
+                                Text(L10n.Home.medicationsEmpty)
+                                    .font(Typography.body)
+                                    .foregroundStyle(palette.secondaryText)
+                            } else {
+                                ForEach(todayMedicationLogs, id: \.id) { log in
+                                    MedicationLogRow(log: log)
+                                }
+                            }
+                        }
                     }
                     .padding(Spacing.md)
                 }
@@ -90,11 +101,11 @@ struct HomeScreen: View {
         .sheet(isPresented: $showingQuickAdd) {
             if let selectedChild = childStore.selectedChild {
                 QuickAddSheet(child: selectedChild) {
-                    Task { await reloadTodayLogs() }
+                    Task { await reloadTodayData() }
                 }
             }
         }
-        .task(id: childStore.selectedChildID) { await reloadTodayLogs() }
+        .task(id: childStore.selectedChildID) { await reloadTodayData() }
     }
 
     private var addButton: some View {
@@ -137,17 +148,24 @@ struct HomeScreen: View {
         "\(GreetingProvider.greeting().localized), \(child.name.isEmpty ? "" : child.name)"
     }
 
-    private func reloadTodayLogs() async {
+    private func reloadTodayData() async {
         guard let child = childStore.selectedChild else {
             todayLogs = []
+            todayMedicationLogs = []
             return
         }
+        let calendar = Calendar.current
         do {
-            let all = try SwiftDataTemperatureLogRepository(context: modelContext).fetchAll(for: child)
-            let calendar = Calendar.current
-            todayLogs = all.filter { calendar.isDateInToday($0.recordedAt) }
+            let allTemperatureLogs = try SwiftDataTemperatureLogRepository(context: modelContext).fetchAll(for: child)
+            todayLogs = allTemperatureLogs.filter { calendar.isDateInToday($0.recordedAt) }
         } catch {
             todayLogs = []
+        }
+        do {
+            let allMedicationLogs = try SwiftDataMedicationLogRepository(context: modelContext).fetchAll(for: child)
+            todayMedicationLogs = allMedicationLogs.filter { calendar.isDateInToday($0.administeredAt) }
+        } catch {
+            todayMedicationLogs = []
         }
     }
 }
