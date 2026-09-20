@@ -12,7 +12,6 @@ struct SplashScreen: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 140, height: 140)
-                .clipShape(RoundedRectangle(cornerRadius: CornerRadiusToken.lg, style: .continuous))
                 .accessibilityHidden(true)
             Spacer()
         }
