@@ -91,7 +91,6 @@ struct TimelineScreen: View {
         Group {
             if childStore.children.isEmpty {
                 PlaceholderScreen(
-                    navigationTitle: L10n.Nav.timeline,
                     systemImage: Icon.timeline,
                     title: L10n.Screens.timelineTitle,
                     message: L10n.Screens.timelinePlaceholderMessage
@@ -127,7 +126,6 @@ struct TimelineScreen: View {
                 .listStyle(.plain)
             }
         }
-        .navigationTitle(L10n.Nav.timeline)
         .toolbar {
             if !items.isEmpty {
                 ToolbarItem(placement: .principal) {

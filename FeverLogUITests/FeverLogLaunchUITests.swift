@@ -25,6 +25,6 @@ final class FeverLogLaunchUITests: XCTestCase {
         XCTAssertTrue(app.tabBars.buttons["Timeline"].exists)
         XCTAssertTrue(app.tabBars.buttons["Charts"].exists)
         XCTAssertTrue(app.tabBars.buttons["Settings"].exists)
-        XCTAssertTrue(app.navigationBars["Home"].exists)
+        XCTAssertTrue(app.staticTexts["No child yet"].waitForExistence(timeout: 5))
     }
 }

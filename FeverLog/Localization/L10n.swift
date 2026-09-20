@@ -63,9 +63,6 @@ enum L10n {
         static var noChildMessage: String { String(localized: "home.noChild.message") }
         static var addChildButton: String { String(localized: "home.addChildButton") }
         static var childSelectorLabel: String { String(localized: "home.childSelector.label") }
-        static var greetingMorning: String { String(localized: "home.greeting.morning") }
-        static var greetingAfternoon: String { String(localized: "home.greeting.afternoon") }
-        static var greetingEvening: String { String(localized: "home.greeting.evening") }
         static var noReadingsYet: String { String(localized: "home.noReadingsYet") }
         static var todayTitle: String { String(localized: "home.today.title") }
         static var todayEmpty: String { String(localized: "home.today.empty") }

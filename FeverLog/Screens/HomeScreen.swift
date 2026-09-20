@@ -29,11 +29,6 @@ struct HomeScreen: View {
             } else if let selectedChild = childStore.selectedChild {
                 ScrollView {
                     VStack(alignment: .leading, spacing: Spacing.lg) {
-                        Text(greetingText(for: selectedChild))
-                            .font(Typography.screenTitle)
-                            .foregroundStyle(palette.primaryText)
-                            .accessibilityAddTraits(.isHeader)
-
                         NavigationLink(value: selectedChild.id) {
                             VStack(alignment: .leading, spacing: Spacing.sm) {
                                 Text(selectedChild.name)
@@ -92,7 +87,6 @@ struct HomeScreen: View {
             }
         }
         .background(palette.background)
-        .navigationTitle(L10n.Nav.home)
         .navigationDestination(for: UUID.self) { childID in
             if let child = childStore.children.first(where: { $0.id == childID }) {
                 ChildProfileScreen(child: child)
@@ -166,10 +160,6 @@ struct HomeScreen: View {
         }
         .accessibilityLabel(L10n.Home.childSelectorLabel)
         .accessibilityIdentifier("home.childSelector")
-    }
-
-    private func greetingText(for child: Child) -> String {
-        "\(GreetingProvider.greeting().localized), \(child.name.isEmpty ? "" : child.name)"
     }
 
     private func avatarColor(for child: Child) -> Color {

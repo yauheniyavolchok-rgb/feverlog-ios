@@ -6,7 +6,6 @@ import SwiftUI
 struct PlaceholderScreen: View {
     @Environment(\.feverPalette) private var palette
 
-    let navigationTitle: String
     let systemImage: String
     let title: String
     let message: String
@@ -15,6 +14,5 @@ struct PlaceholderScreen: View {
         EmptyStateView(systemImage: systemImage, title: title, message: message)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(palette.background)
-            .navigationTitle(navigationTitle)
     }
 }
