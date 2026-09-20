@@ -26,5 +26,13 @@ enum UITestSupport {
             try? FileManager.default.removeItem(at: URL(fileURLWithPath: storeURL.path + suffix))
         }
     }
+
+    /// The simulator has no equivalent of `simctl privacy` for notification
+    /// authorization, so UI tests force the denied-permission state through
+    /// this launch argument instead of the real (uncontrollable) system
+    /// prompt.
+    static var forcesNotificationsDenied: Bool {
+        ProcessInfo.processInfo.arguments.contains("--uitest-notifications-denied")
+    }
 }
 #endif

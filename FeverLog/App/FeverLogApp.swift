@@ -3,6 +3,7 @@ import SwiftUI
 
 @main
 struct FeverLogApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     private let persistenceController: PersistenceController
 
     init() {

@@ -29,6 +29,13 @@ struct SettingsScreen: View {
             } header: {
                 Text(L10n.Settings.appearanceTitle)
             }
+
+            Section {
+                NavigationLink(L10n.Reminders.title) {
+                    RemindersScreen()
+                }
+                .accessibilityIdentifier("settings.reminders")
+            }
         }
         .navigationTitle(L10n.Nav.settings)
     }

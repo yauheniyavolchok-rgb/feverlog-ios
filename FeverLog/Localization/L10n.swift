@@ -235,4 +235,58 @@ enum L10n {
         static var save: String { String(localized: "weightForm.save") }
         static var cancel: String { String(localized: "weightForm.cancel") }
     }
+
+    enum Charts {
+        static var range24h: String { String(localized: "charts.range.24h") }
+        static var range3d: String { String(localized: "charts.range.3d") }
+        static var range7d: String { String(localized: "charts.range.7d") }
+        static var range14d: String { String(localized: "charts.range.14d") }
+        static var rangeLabel: String { String(localized: "charts.range.label") }
+
+        static var temperatureTitle: String { String(localized: "charts.temperature.title") }
+        static var temperatureEmpty: String { String(localized: "charts.temperature.empty") }
+        static var temperatureAxisLabel: String { String(localized: "charts.temperature.axisLabel") }
+        static var temperaturePointAccessibility: String { String(localized: "charts.temperature.point.accessibility") }
+        static var medicationMarkerAccessibility: String { String(localized: "charts.medicationMarker.accessibility") }
+
+        static var medicationTitle: String { String(localized: "charts.medication.title") }
+        static var medicationEmpty: String { String(localized: "charts.medication.empty") }
+        static var medicationBarAccessibility: String { String(localized: "charts.medication.bar.accessibility") }
+
+        static var symptomsTitle: String { String(localized: "charts.symptoms.title") }
+        static var symptomsEmpty: String { String(localized: "charts.symptoms.empty") }
+        static var symptomsBarAccessibility: String { String(localized: "charts.symptoms.bar.accessibility") }
+
+        static var noChildTitle: String { String(localized: "charts.noChild.title") }
+        static var noChildMessage: String { String(localized: "charts.noChild.message") }
+    }
+
+    enum Reminders {
+        static var title: String { String(localized: "reminders.title") }
+        static var addButton: String { String(localized: "reminders.addButton") }
+        static var emptyTitle: String { String(localized: "reminders.empty.title") }
+        static var emptyMessage: String { String(localized: "reminders.empty.message") }
+        static var permissionDeniedTitle: String { String(localized: "reminders.permissionDenied.title") }
+        static var permissionDeniedMessage: String { String(localized: "reminders.permissionDenied.message") }
+        static var openSettingsButton: String { String(localized: "reminders.openSettingsButton") }
+
+        static var typeLabel: String { String(localized: "reminders.type.label") }
+        static var typeMedication: String { String(localized: "reminders.type.medication") }
+        static var typeTemperature: String { String(localized: "reminders.type.temperature") }
+        static var typeHydration: String { String(localized: "reminders.type.hydration") }
+        static var typeCustom: String { String(localized: "reminders.type.custom") }
+
+        static var dateLabel: String { String(localized: "reminders.date.label") }
+        static var enabledLabel: String { String(localized: "reminders.enabled.label") }
+        static var save: String { String(localized: "reminders.save") }
+        static var cancel: String { String(localized: "reminders.cancel") }
+        static var addTitle: String { String(localized: "reminders.addTitle") }
+        static var editTitle: String { String(localized: "reminders.editTitle") }
+
+        static var notificationTitleMedication: String { String(localized: "reminders.notification.title.medication") }
+        static var notificationTitleTemperature: String { String(localized: "reminders.notification.title.temperature") }
+        static var notificationTitleHydration: String { String(localized: "reminders.notification.title.hydration") }
+        static var notificationTitleCustom: String { String(localized: "reminders.notification.title.custom") }
+        static var notificationBody: String { String(localized: "reminders.notification.body") }
+    }
 }
