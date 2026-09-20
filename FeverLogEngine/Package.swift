@@ -8,7 +8,7 @@ let package = Package(
         .library(name: "FeverLogEngine", targets: ["FeverLogEngine"])
     ],
     targets: [
-        .target(name: "FeverLogEngine"),
+        .target(name: "FeverLogEngine", resources: [.process("Resources")]),
         .testTarget(name: "FeverLogEngineTests", dependencies: ["FeverLogEngine"])
     ]
 )

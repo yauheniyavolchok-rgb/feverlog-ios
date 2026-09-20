@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "medications": [
+    {
+      "id": "paracetamol-generic-160-5-suspension-example",
+      "brand": "Generic",
+      "activeIngredient": "Paracetamol",
+      "concentration": {
+        "milligrams": 160,
+        "milliliters": 5
+      },
+      "form": "oral suspension",
+      "strength": "160 mg / 5 mL",
+      "countryOrLocale": "example",
+      "singleDoseRule": {
+        "minMilligramsPerKilogram": 10,
+        "maxMilligramsPerKilogram": 15,
+        "maxMilligramsPerDose": null
+      },
+      "dailyMaximumRule": {
+        "maxMilligramsPerKilogramPerDay": 75,
+        "maxMilligramsPerDay": 1000,
+        "maxDosesPerDay": 5,
+        "minimumIntervalSeconds": 14400
+      },
+      "sourceIdentifier": "example-reference-only",
+      "sourceVersion": "2026.1-draft",
+      "reviewStatus": "unreviewed",
+      "isActive": true,
+      "databaseSchemaVersion": 1
+    },
+    {
+      "id": "acetaminophen-childrens-tylenol-160-5-suspension-example",
+      "brand": "Children's Tylenol",
+      "activeIngredient": "Acetaminophen",
+      "concentration": {
+        "milligrams": 160,
+        "milliliters": 5
+      },
+      "form": "oral suspension",
+      "strength": "160 mg / 5 mL",
+      "countryOrLocale": "example",
+      "singleDoseRule": {
+        "minMilligramsPerKilogram": 10,
+        "maxMilligramsPerKilogram": 15,
+        "maxMilligramsPerDose": null
+      },
+      "dailyMaximumRule": {
+        "maxMilligramsPerKilogramPerDay": 75,
+        "maxMilligramsPerDay": 1000,
+        "maxDosesPerDay": 5,
+        "minimumIntervalSeconds": 14400
+      },
+      "sourceIdentifier": "example-reference-only",
+      "sourceVersion": "2026.1-draft",
+      "reviewStatus": "unreviewed",
+      "isActive": true,
+      "databaseSchemaVersion": 1
+    },
+    {
+      "id": "ibuprofen-generic-100-5-suspension-example",
+      "brand": "Generic",
+      "activeIngredient": "Ibuprofen",
+      "concentration": {
+        "milligrams": 100,
+        "milliliters": 5
+      },
+      "form": "oral suspension",
+      "strength": "100 mg / 5 mL",
+      "countryOrLocale": "example",
+      "singleDoseRule": {
+        "minMilligramsPerKilogram": 5,
+        "maxMilligramsPerKilogram": 10,
+        "maxMilligramsPerDose": null
+      },
+      "dailyMaximumRule": {
+        "maxMilligramsPerKilogramPerDay": 40,
+        "maxMilligramsPerDay": null,
+        "maxDosesPerDay": 4,
+        "minimumIntervalSeconds": 21600
+      },
+      "sourceIdentifier": "example-reference-only",
+      "sourceVersion": "2026.1-draft",
+      "reviewStatus": "unreviewed",
+      "isActive": true,
+      "databaseSchemaVersion": 1
+    }
+  ]
+}
