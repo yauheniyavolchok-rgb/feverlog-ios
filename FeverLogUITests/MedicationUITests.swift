@@ -74,7 +74,7 @@ final class MedicationUITests: XCTestCase {
 
         // Ibuprofen: 40 mg/kg/day maximum. Set the child's weight low so a
         // single dose blows past both the per-kg range and the daily max.
-        app.staticTexts["Ava"].tap()
+        app.buttons["home.childCard"].tap()
         app.buttons["childProfile.addWeight"].tap()
         let weightField = app.textFields["weightForm.value"]
         XCTAssertTrue(weightField.waitForExistence(timeout: 5))

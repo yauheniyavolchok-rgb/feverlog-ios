@@ -18,7 +18,7 @@ final class ChildProfileUITests: XCTestCase {
         let app = XCUIApplication().launchFreshPastOnboarding()
         app.createChild(named: "Ava", fromEmptyState: true)
 
-        app.staticTexts["Ava"].tap()
+        app.buttons["home.childCard"].tap()
         XCTAssertTrue(app.buttons["childProfile.edit"].waitForExistence(timeout: 5))
         app.buttons["childProfile.edit"].tap()
 
@@ -36,7 +36,7 @@ final class ChildProfileUITests: XCTestCase {
         let app = XCUIApplication().launchFreshPastOnboarding()
         app.createChild(named: "Ava", fromEmptyState: true)
 
-        app.staticTexts["Ava"].tap()
+        app.buttons["home.childCard"].tap()
         XCTAssertTrue(app.buttons["childProfile.addWeight"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["Not recorded yet"].exists)
 
@@ -70,7 +70,7 @@ final class ChildProfileUITests: XCTestCase {
         let app = XCUIApplication().launchFreshPastOnboarding()
         app.createChild(named: "Ava", fromEmptyState: true)
 
-        app.staticTexts["Ava"].tap()
+        app.buttons["home.childCard"].tap()
         XCTAssertTrue(app.buttons["childProfile.delete"].waitForExistence(timeout: 5))
         app.buttons["childProfile.delete"].tap()
 

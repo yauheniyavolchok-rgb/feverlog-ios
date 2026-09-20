@@ -1,8 +1,10 @@
+import SwiftData
 import SwiftUI
 
 struct ChildFormScreen: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(ChildStore.self) private var childStore
+    @Environment(\.modelContext) private var modelContext
     @Environment(\.feverPalette) private var palette
 
     /// `nil` means creating a new child; non-nil means editing an existing one.
@@ -12,6 +14,8 @@ struct ChildFormScreen: View {
     @State private var birthday: Date
     @State private var avatar: ChildAvatarOption
     @State private var avatarColor: ChildAvatarColorOption
+    @State private var weightValue: Double = 0
+    @State private var weightUnit: WeightUnit = .kilograms
     @State private var errorMessage: String?
 
     init(existingChild: Child? = nil) {
@@ -31,6 +35,34 @@ struct ChildFormScreen: View {
                     .accessibilityIdentifier("childForm.name")
                 DatePicker(L10n.ChildForm.birthdayLabel, selection: $birthday, displayedComponents: .date)
                     .accessibilityIdentifier("childForm.birthday")
+            } footer: {
+                Text(ageSummaryText)
+            }
+
+            if existingChild == nil {
+                Section {
+                    HStack {
+                        Text(L10n.ChildForm.weightLabel)
+                        Spacer()
+                        TextField(
+                            L10n.ChildForm.weightLabel,
+                            value: $weightValue,
+                            format: .number.precision(.fractionLength(0...2))
+                        )
+                        .keyboardType(.decimalPad)
+                        .multilineTextAlignment(.trailing)
+                        .accessibilityIdentifier("childForm.weight")
+                    }
+
+                    Picker(L10n.WeightForm.unitLabel, selection: $weightUnit) {
+                        ForEach(WeightUnit.allCases, id: \.self) { unit in
+                            Text(unit.rawValue.capitalized).tag(unit)
+                        }
+                    }
+                    .accessibilityIdentifier("childForm.weightUnit")
+                } footer: {
+                    Text(L10n.ChildForm.weightOptionalHint)
+                }
             }
 
             Section(L10n.ChildForm.avatarLabel) {
@@ -59,6 +91,11 @@ struct ChildFormScreen: View {
         }
     }
 
+    private var ageSummaryText: String {
+        let age = AgeCalculator.age(from: birthday)
+        return "\(L10n.ChildProfile.ageYears(age.years)) \(L10n.ChildProfile.ageMonths(age.months))"
+    }
+
     private var avatarPicker: some View {
         LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3), spacing: Spacing.sm) {
             ForEach(ChildAvatarOption.allCases) { option in
@@ -71,6 +108,7 @@ struct ChildFormScreen: View {
                         .background(avatar == option ? avatarColor.color(in: palette).opacity(0.3) : palette.secondarySurface)
                         .clipShape(Circle())
                 }
+                .buttonStyle(.plain)
                 .accessibilityIdentifier("childForm.avatar.\(option.rawValue)")
                 .accessibilityAddTraits(avatar == option ? [.isButton, .isSelected] : [.isButton])
             }
@@ -93,6 +131,7 @@ struct ChildFormScreen: View {
                             }
                         }
                 }
+                .buttonStyle(.plain)
                 .accessibilityIdentifier("childForm.avatarColor.\(option.rawValue)")
                 .accessibilityAddTraits(avatarColor == option ? [.isButton, .isSelected] : [.isButton])
             }
@@ -111,12 +150,16 @@ struct ChildFormScreen: View {
                 existingChild.avatarColorIdentifier = avatarColor.rawValue
                 try childStore.updateChild(existingChild)
             } else {
-                try childStore.createChild(
+                let newChild = try childStore.createChild(
                     name: trimmedName,
                     birthday: birthday,
                     avatarIdentifier: avatar.rawValue,
                     avatarColorIdentifier: avatarColor.rawValue
                 )
+                if let newChild, weightValue > 0 {
+                    let weightRepository = SwiftDataWeightHistoryRepository(context: modelContext)
+                    _ = try weightRepository.addWeight(weightValue, unit: weightUnit, effectiveDate: .now, child: newChild)
+                }
             }
             dismiss()
         } catch {

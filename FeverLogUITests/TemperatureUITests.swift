@@ -88,15 +88,24 @@ final class TemperatureUITests: XCTestCase {
     }
 
     @MainActor
-    func testTimelineIsScopedPerChild() throws {
+    func testTimelineIsHouseholdWideAndSortableByChild() throws {
         let app = XCUIApplication().launchFreshPastOnboarding()
         app.createChild(named: "Ava", fromEmptyState: true)
         recordTemperature(in: app)
 
+        // Leo is created and becomes the selected child on Home, but has no
+        // entries of his own — the household-wide Timeline should still show
+        // Ava's entry regardless of which child is currently selected.
         app.createChild(named: "Leo", fromEmptyState: false)
         app.tabBars.buttons["Timeline"].tap()
 
-        // Leo has no entries yet, even though Ava does.
-        XCTAssertTrue(app.staticTexts["No entries yet"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["37.0°C"].waitForExistence(timeout: 5))
+
+        let sortPicker = app.segmentedControls["timeline.sortMode"]
+        XCTAssertTrue(sortPicker.waitForExistence(timeout: 5))
+        sortPicker.buttons["Child"].tap()
+
+        XCTAssertTrue(app.staticTexts["Ava"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["37.0°C"].exists)
     }
 }

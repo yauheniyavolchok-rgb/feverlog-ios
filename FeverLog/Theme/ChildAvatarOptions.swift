@@ -1,12 +1,17 @@
 import SwiftUI
 
 enum ChildAvatarOption: String, CaseIterable, Identifiable, Sendable {
+    case cat = "cat.fill"
+    case bird = "bird.fill"
+    case sun = "sun.max.fill"
+    case moon = "moon.fill"
     case star = "star.fill"
-    case moon = "moon.stars.fill"
+    case car = "car.fill"
+    case heart = "heart.fill"
     case leaf = "leaf.fill"
-    case cloud = "cloud.sun.fill"
-    case paw = "pawprint.fill"
-    case smile = "face.smiling.fill"
+    // No literal "rocket" glyph exists in SF Symbols; this is the closest
+    // takeoff-themed stand-in.
+    case rocket = "airplane.departure"
 
     var id: String { rawValue }
 }

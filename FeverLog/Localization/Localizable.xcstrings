@@ -111,6 +111,28 @@
         }
       }
     },
+    "childForm.weight.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weight"
+          }
+        }
+      }
+    },
+    "childForm.weight.optionalHint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Optional — you can add or update this anytime from the child's profile."
+          }
+        }
+      }
+    },
     "childForm.title.edit" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1273,6 +1295,39 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No entries yet"
+          }
+        }
+      }
+    },
+    "timeline.sort.byChild" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Child"
+          }
+        }
+      }
+    },
+    "timeline.sort.byTime" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Time"
+          }
+        }
+      }
+    },
+    "timeline.sort.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sort"
           }
         }
       }

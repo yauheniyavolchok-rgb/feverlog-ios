@@ -4,6 +4,9 @@ struct TemperatureLogRow: View {
     @Environment(\.feverPalette) private var palette
 
     let log: TemperatureLog
+    /// When set (e.g. in a household-wide timeline), shows the owning
+    /// child's avatar so entries from multiple kids stay distinguishable.
+    var owner: Child?
 
     private var status: TemperatureStatus {
         TemperatureClassifier.classify(celsius: log.temperatureCelsius)
@@ -14,6 +17,13 @@ struct TemperatureLogRow: View {
             RoundedRectangle(cornerRadius: CornerRadiusToken.sm, style: .continuous)
                 .fill(palette.color(for: status))
                 .frame(width: 4)
+
+            if let owner {
+                Image(systemName: ChildAvatarOption(rawValue: owner.avatarIdentifier)?.rawValue ?? "star.fill")
+                    .foregroundStyle((ChildAvatarColorOption(rawValue: owner.avatarColorIdentifier) ?? .mint).color(in: palette))
+                    .frame(width: Spacing.lg, height: Spacing.lg)
+                    .accessibilityHidden(true)
+            }
 
             VStack(alignment: .leading, spacing: Spacing.xs) {
                 HStack(spacing: Spacing.xs) {

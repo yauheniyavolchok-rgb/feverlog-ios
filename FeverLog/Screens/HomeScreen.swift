@@ -45,6 +45,7 @@ struct HomeScreen: View {
                             }
                         }
                         .buttonStyle(.plain)
+                        .accessibilityIdentifier("home.childCard")
 
                         VStack(alignment: .leading, spacing: Spacing.sm) {
                             SectionHeader(title: L10n.Home.todayTitle)
@@ -127,8 +128,10 @@ struct HomeScreen: View {
     private var childSelectorMenu: some View {
         Menu {
             ForEach(childStore.children, id: \.id) { child in
-                Button(child.name) {
+                Button {
                     childStore.selectedChildID = child.id
+                } label: {
+                    Label(child.name, systemImage: ChildAvatarOption(rawValue: child.avatarIdentifier)?.rawValue ?? "star.fill")
                 }
             }
             Divider()
@@ -138,7 +141,17 @@ struct HomeScreen: View {
                 Label(L10n.Home.addChildButton, systemImage: Icon.add)
             }
         } label: {
-            Label(childStore.selectedChild?.name ?? "", systemImage: "chevron.down")
+            HStack(spacing: Spacing.xs) {
+                if let selectedChild = childStore.selectedChild {
+                    Image(systemName: ChildAvatarOption(rawValue: selectedChild.avatarIdentifier)?.rawValue ?? "star.fill")
+                        .foregroundStyle(avatarColor(for: selectedChild))
+                        .accessibilityHidden(true)
+                }
+                Text(childStore.selectedChild?.name ?? "")
+                    .accessibilityHidden(true)
+                Image(systemName: "chevron.down")
+                    .accessibilityHidden(true)
+            }
         }
         .accessibilityLabel(L10n.Home.childSelectorLabel)
         .accessibilityIdentifier("home.childSelector")
@@ -146,6 +159,10 @@ struct HomeScreen: View {
 
     private func greetingText(for child: Child) -> String {
         "\(GreetingProvider.greeting().localized), \(child.name.isEmpty ? "" : child.name)"
+    }
+
+    private func avatarColor(for child: Child) -> Color {
+        (ChildAvatarColorOption(rawValue: child.avatarColorIdentifier) ?? .mint).color(in: palette)
     }
 
     private func reloadTodayData() async {

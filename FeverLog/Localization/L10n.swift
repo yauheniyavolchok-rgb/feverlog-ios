@@ -109,6 +109,9 @@ enum L10n {
         static var edit: String { String(localized: "timeline.edit") }
         static var duplicate: String { String(localized: "timeline.duplicate") }
         static var delete: String { String(localized: "timeline.delete") }
+        static var sortLabel: String { String(localized: "timeline.sort.label") }
+        static var sortByTime: String { String(localized: "timeline.sort.byTime") }
+        static var sortByChild: String { String(localized: "timeline.sort.byChild") }
     }
 
     enum ChildForm {
@@ -118,6 +121,8 @@ enum L10n {
         static var birthdayLabel: String { String(localized: "childForm.birthday.label") }
         static var avatarLabel: String { String(localized: "childForm.avatar.label") }
         static var avatarColorLabel: String { String(localized: "childForm.avatarColor.label") }
+        static var weightLabel: String { String(localized: "childForm.weight.label") }
+        static var weightOptionalHint: String { String(localized: "childForm.weight.optionalHint") }
         static var save: String { String(localized: "childForm.save") }
         static var cancel: String { String(localized: "childForm.cancel") }
     }
