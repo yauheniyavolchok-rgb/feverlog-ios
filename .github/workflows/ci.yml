@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: macos-15
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_16.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Resolve Swift package dependencies
+        run: xcodebuild -resolvePackageDependencies -project FeverLog.xcodeproj -scheme FeverLog
+
+      - name: Build
+        run: |
+          xcodebuild build \
+            -project FeverLog.xcodeproj \
+            -scheme FeverLog \
+            -destination "platform=iOS Simulator,name=iPhone 16"
+
+      - name: Test
+        run: |
+          xcodebuild test \
+            -project FeverLog.xcodeproj \
+            -scheme FeverLog \
+            -destination "platform=iOS Simulator,name=iPhone 16"
+
+  lint:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install SwiftLint
+        run: brew install swiftlint
+      - name: Run SwiftLint
+        run: swiftlint lint --strict
+
+  engine-tests:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test FeverLogEngine package
+        working-directory: FeverLogEngine
+        run: swift test

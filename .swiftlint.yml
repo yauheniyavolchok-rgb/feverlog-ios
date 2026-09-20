@@ -1,0 +1,38 @@
+included:
+  - FeverLog
+  - FeverLogTests
+  - FeverLogUITests
+  - FeverLogEngine/Sources
+  - FeverLogEngine/Tests
+
+excluded:
+  - build
+  - DerivedData
+  - .build
+
+disabled_rules:
+  - todo # TODOs are required by spec and tracked explicitly; see repo conventions.
+
+opt_in_rules:
+  - force_unwrapping
+  - implicitly_unwrapped_optional
+  - empty_count
+  - closure_spacing
+  - fatal_error_message
+  - unused_import
+  - unneeded_parentheses_in_closure_argument
+
+force_unwrapping: error
+force_cast: error
+force_try: error
+
+line_length:
+  warning: 140
+  error: 200
+
+identifier_name:
+  min_length:
+    warning: 2
+  excluded:
+    - id
+    - to
