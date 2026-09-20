@@ -3,7 +3,15 @@ import SwiftUI
 
 struct RootView: View {
     @State private var themeManager = ThemeManager()
+    @State private var languageManager = LanguageManager()
     @State private var onboardingStore = OnboardingStateStore()
+    /// Owned here, outside the `.id(languageManager.language)` boundary below,
+    /// so a language change — which force-remounts `MainTabView` to refresh
+    /// every static `L10n` string — doesn't also reset tab selection or pop
+    /// navigation. `NavigationStack` replays its destinations from `path`,
+    /// so preserving this instance across the remount keeps the user where
+    /// they were, just re-rendered in the new language.
+    @State private var router = AppRouter()
     @State private var childStore = ChildStore()
     @State private var authService = AuthService(client: SupabaseClientProvider.shared?.auth)
     @State private var showingSplash = true
@@ -27,9 +35,12 @@ struct RootView: View {
                 OnboardingContainerView(onFinish: { onboardingStore.complete() })
             }
         }
+        .id(languageManager.language)
         .environment(themeManager)
+        .environment(languageManager)
         .environment(childStore)
         .environment(authService)
+        .environment(router)
         .environment(\.feverPalette, themeManager.palette(for: systemColorScheme))
         .preferredColorScheme(themeManager.appearanceMode.preferredColorScheme)
         .task {

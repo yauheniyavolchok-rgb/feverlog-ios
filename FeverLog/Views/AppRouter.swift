@@ -10,6 +10,15 @@ enum AppTab: String, CaseIterable, Identifiable, Sendable {
     var id: String { rawValue }
 }
 
+/// `NavigationPath` only records pushes made via `NavigationLink(value:)` +
+/// `.navigationDestination(for:)`. The Settings screens that need their
+/// push preserved across a language-change remount (see `RootView`'s
+/// `.id(languageManager.language)`) use this value-based routing instead of
+/// a plain destination-closure `NavigationLink`.
+enum SettingsRoute: Hashable, Sendable {
+    case language
+}
+
 @Observable
 final class AppRouter {
     var selectedTab: AppTab = .home

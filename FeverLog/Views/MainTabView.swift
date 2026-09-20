@@ -1,9 +1,11 @@
 import SwiftUI
 
 struct MainTabView: View {
-    @State private var router = AppRouter()
+    @Environment(AppRouter.self) private var router
 
     var body: some View {
+        @Bindable var router = router
+
         TabView(selection: $router.selectedTab) {
             NavigationStack(path: $router.homePath) {
                 HomeScreen()
@@ -29,7 +31,6 @@ struct MainTabView: View {
             .tabItem { Label(L10n.Nav.settings, systemImage: Icon.settings) }
             .tag(AppTab.settings)
         }
-        .environment(router)
     }
 }
 
@@ -38,5 +39,6 @@ struct MainTabView: View {
         .modelContainer(PreviewContainer.shared)
         .environment(ThemeManager(settingsStore: InMemorySettingsStore()))
         .environment(ChildStore())
+        .environment(AppRouter())
         .feverThemed()
 }

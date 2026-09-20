@@ -31,6 +31,9 @@ struct SettingsScreen: View {
             }
 
             Section {
+                NavigationLink(L10n.LanguageSettings.title, value: SettingsRoute.language)
+                    .accessibilityIdentifier("settings.language")
+
                 NavigationLink(L10n.Reminders.title) {
                     RemindersScreen()
                 }
@@ -50,6 +53,11 @@ struct SettingsScreen: View {
             }
         }
         .navigationTitle(L10n.Nav.settings)
+        .navigationDestination(for: SettingsRoute.self) { route in
+            switch route {
+            case .language: LanguageSettingsScreen()
+            }
+        }
     }
 
     private func setAppearanceMode(_ mode: AppearanceMode) {
