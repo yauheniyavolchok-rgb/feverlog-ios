@@ -12,3 +12,5 @@ steps:
 7. Share to Dr.Baby clinic download link and QR
 8. Add function share with your doctor at Dr.Baby 
 9. celebrate ;) 
+
+<img width="347" height="743" alt="image" src="https://github.com/user-attachments/assets/9da52b32-0095-428d-baa2-85a38854e183" />
