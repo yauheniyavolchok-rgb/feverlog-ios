@@ -80,14 +80,6 @@ struct HomeScreen: View {
                 ToolbarItem(placement: .topBarLeading) {
                     childSelectorMenu
                 }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        showingAddChild = true
-                    } label: {
-                        Image(systemName: Icon.add)
-                    }
-                    .accessibilityLabel(L10n.Home.addChildButton)
-                }
             }
         }
         .sheet(isPresented: $showingAddChild) {
@@ -127,6 +119,12 @@ struct HomeScreen: View {
                 Button(child.name) {
                     childStore.selectedChildID = child.id
                 }
+            }
+            Divider()
+            Button {
+                showingAddChild = true
+            } label: {
+                Label(L10n.Home.addChildButton, systemImage: Icon.add)
             }
         } label: {
             Label(childStore.selectedChild?.name ?? "", systemImage: "chevron.down")

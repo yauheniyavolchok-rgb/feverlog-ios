@@ -13,7 +13,8 @@ extension XCUIApplication {
         if fromEmptyState {
             buttons["Add Child"].tap()
         } else {
-            navigationBars.buttons["Add Child"].tap()
+            navigationBars.buttons["home.childSelector"].tap()
+            buttons["Add Child"].tap()
         }
         let nameField = textFields["childForm.name"]
         XCTAssertTrue(nameField.waitForExistence(timeout: 5))
