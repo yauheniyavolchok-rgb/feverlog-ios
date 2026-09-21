@@ -11,6 +11,9 @@ struct FeverLogApp: App {
         UITestSupport.resetStateIfRequested()
         #endif
         persistenceController = .production()
+        #if DEBUG
+        UITestSupport.seedLargeDatasetIfRequested(context: persistenceController.mainContext)
+        #endif
     }
 
     var body: some Scene {

@@ -174,6 +174,44 @@ for the full write-up. The short version:
   [Supabase setup](#supabase-setup-household-sync) above for the full
   design notes.
 
+## Performance
+
+`FeverLogUITests/PerformanceTests.swift` measures the two things most
+likely to regress silently: cold launch time and Timeline scroll cost
+under a realistic data volume.
+
+```bash
+xcodebuild test -project FeverLog.xcodeproj -scheme FeverLog \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
+  -only-testing:FeverLogUITests/PerformanceTests
+```
+
+- **`testColdLaunch`** — `XCTApplicationLaunchMetric()` around a fresh
+  launch with an empty store, so the result reflects fixed startup cost
+  (SwiftData container setup, initial view construction) rather than data
+  volume.
+- **`testTimelineScrollWithLargeDataset`** — `XCTCPUMetric()` and
+  `XCTMemoryMetric()` around a scroll gesture through a seeded child with
+  300 temperature readings (`--uitest-seed-large-dataset`, handled in
+  `UITestSupport`, DEBUG-only). An empty Timeline scrolling fast tells you
+  nothing about whether the day-grouping or row rendering is efficient —
+  this does.
+
+**Reading results:** open the test's `.xcresult` in Xcode (Report
+Navigator, or `open <path>.xcresult` from the "Test session results" line
+`xcodebuild` prints) and select the test to see the metric charts and raw
+per-iteration values.
+
+**Baselines are intentionally not committed.** Xcode's baseline mechanism
+(right-click a metric → Set Baseline) records expected values keyed to the
+specific Mac/simulator/OS combination it was captured on — a baseline from
+one machine will spuriously fail on another. If you want local pass/fail
+gating, set your own baseline after establishing what "normal" looks like
+on your machine; treat these tests as a way to *observe and compare*
+metrics over time (e.g. before/after a change you suspect affects
+performance), not as CI gates, unless CI runs on fixed, dedicated
+hardware.
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).
