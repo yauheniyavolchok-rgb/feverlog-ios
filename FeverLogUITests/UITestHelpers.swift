@@ -9,6 +9,20 @@ extension XCUIApplication {
         return self
     }
 
+    /// The Settings list has grown long enough that later rows aren't laid
+    /// out (and so aren't found by identifier at all — not just unhittable)
+    /// until scrolled into view. Swipes up until the target becomes
+    /// hittable, then taps it.
+    func scrollToAndTap(_ identifier: String, maxSwipes: Int = 10) {
+        let target = buttons[identifier]
+        var remaining = maxSwipes
+        while !target.isHittable, remaining > 0 {
+            swipeUp()
+            remaining -= 1
+        }
+        target.tap()
+    }
+
     func createChild(named name: String, fromEmptyState: Bool) {
         if fromEmptyState {
             buttons["Add Child"].tap()

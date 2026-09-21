@@ -5,6 +5,7 @@ struct WeightEntryFormScreen: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Environment(\.feverPalette) private var palette
+    @Environment(UnitsManager.self) private var unitsManager
 
     let child: Child
     let onSaved: () -> Void
@@ -46,6 +47,7 @@ struct WeightEntryFormScreen: View {
             }
         }
         .navigationTitle(L10n.WeightForm.title)
+        .task { unit = unitsManager.defaultWeightUnit }
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button(L10n.WeightForm.cancel) { dismiss() }

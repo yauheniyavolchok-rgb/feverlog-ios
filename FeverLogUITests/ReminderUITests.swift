@@ -7,7 +7,7 @@ final class ReminderUITests: XCTestCase {
 
     private func openReminders(in app: XCUIApplication) {
         app.tabBars.buttons["Settings"].tap()
-        app.buttons["settings.reminders"].tap()
+        app.scrollToAndTap("settings.reminders")
     }
 
     @MainActor

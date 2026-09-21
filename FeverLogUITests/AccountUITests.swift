@@ -14,7 +14,7 @@ final class AccountUITests: XCTestCase {
         let app = XCUIApplication().launchFreshPastOnboarding()
 
         app.tabBars.buttons["Settings"].tap()
-        app.buttons["settings.account"].tap()
+        app.scrollToAndTap("settings.account")
 
         XCTAssertTrue(app.staticTexts["Not backed up"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["account.continueWithApple"].exists)
@@ -28,7 +28,7 @@ final class AccountUITests: XCTestCase {
         let app = XCUIApplication().launchFreshPastOnboarding()
 
         app.tabBars.buttons["Settings"].tap()
-        app.buttons["settings.account"].tap()
+        app.scrollToAndTap("settings.account")
         app.buttons["account.continueWithEmail"].tap()
 
         let emailField = app.textFields["emailLink.email"]
@@ -44,7 +44,7 @@ final class AccountUITests: XCTestCase {
         let app = XCUIApplication().launchFreshPastOnboarding()
 
         app.tabBars.buttons["Settings"].tap()
-        app.buttons["settings.syncStatus"].tap()
+        app.scrollToAndTap("settings.syncStatus")
 
         let notConfiguredMessage = "Cloud sync isn't configured for this build. Your data stays fully available on this device."
         XCTAssertTrue(app.staticTexts[notConfiguredMessage].waitForExistence(timeout: 5))

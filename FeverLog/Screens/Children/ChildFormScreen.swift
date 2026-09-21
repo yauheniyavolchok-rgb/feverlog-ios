@@ -4,6 +4,7 @@ import SwiftUI
 struct ChildFormScreen: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(ChildStore.self) private var childStore
+    @Environment(UnitsManager.self) private var unitsManager
     @Environment(\.modelContext) private var modelContext
     @Environment(\.feverPalette) private var palette
 
@@ -79,6 +80,11 @@ struct ChildFormScreen: View {
             }
         }
         .navigationTitle(existingChild == nil ? L10n.ChildForm.titleNew : L10n.ChildForm.titleEdit)
+        .task {
+            if existingChild == nil {
+                weightUnit = unitsManager.defaultWeightUnit
+            }
+        }
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button(L10n.ChildForm.cancel) { dismiss() }

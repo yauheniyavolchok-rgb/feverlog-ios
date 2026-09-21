@@ -4,6 +4,7 @@ import SwiftUI
 struct RootView: View {
     @State private var themeManager = ThemeManager()
     @State private var languageManager = LanguageManager()
+    @State private var unitsManager = UnitsManager()
     @State private var onboardingStore = OnboardingStateStore()
     /// Owned here, outside the `.id(languageManager.language)` boundary below,
     /// so a language change — which force-remounts `MainTabView` to refresh
@@ -38,6 +39,7 @@ struct RootView: View {
         .id(languageManager.language)
         .environment(themeManager)
         .environment(languageManager)
+        .environment(unitsManager)
         .environment(childStore)
         .environment(authService)
         .environment(router)

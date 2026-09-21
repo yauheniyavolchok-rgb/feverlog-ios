@@ -31,6 +31,28 @@ struct SettingsScreen: View {
             }
 
             Section {
+                NavigationLink(L10n.HouseholdSettings.title) {
+                    HouseholdSettingsScreen()
+                }
+                .accessibilityIdentifier("settings.household")
+
+                NavigationLink(L10n.ChildrenSettings.title) {
+                    ChildrenSettingsScreen()
+                }
+                .accessibilityIdentifier("settings.children")
+            }
+
+            Section {
+                NavigationLink(L10n.MedicationLibrarySettings.title) {
+                    MedicationLibrarySettingsScreen()
+                }
+                .accessibilityIdentifier("settings.medicationLibrary")
+
+                NavigationLink(L10n.UnitsSettings.title) {
+                    UnitsSettingsScreen()
+                }
+                .accessibilityIdentifier("settings.units")
+
                 NavigationLink(L10n.LanguageSettings.title, value: SettingsRoute.language)
                     .accessibilityIdentifier("settings.language")
 
@@ -50,6 +72,18 @@ struct SettingsScreen: View {
                     SyncStatusScreen()
                 }
                 .accessibilityIdentifier("settings.syncStatus")
+            }
+
+            Section {
+                NavigationLink(L10n.About.title) {
+                    AboutScreen()
+                }
+                .accessibilityIdentifier("settings.about")
+
+                NavigationLink(L10n.Privacy.title) {
+                    PrivacyScreen()
+                }
+                .accessibilityIdentifier("settings.privacy")
             }
         }
         .navigationTitle(L10n.Nav.settings)

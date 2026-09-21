@@ -10,7 +10,7 @@ final class LanguageUITests: XCTestCase {
         let app = XCUIApplication().launchFreshPastOnboarding()
 
         app.tabBars.buttons["Settings"].tap()
-        app.buttons["settings.language"].tap()
+        app.scrollToAndTap("settings.language")
         XCTAssertTrue(app.navigationBars["Language"].waitForExistence(timeout: 5))
 
         let ukrainianOption = app.buttons["languageSettings.option.uk"]
@@ -28,7 +28,7 @@ final class LanguageUITests: XCTestCase {
         let app = XCUIApplication().launchFreshPastOnboarding()
 
         app.tabBars.buttons["Settings"].tap()
-        app.buttons["settings.language"].tap()
+        app.scrollToAndTap("settings.language")
         let ukrainianOption = app.buttons["languageSettings.option.uk"]
         XCTAssertTrue(ukrainianOption.waitForExistence(timeout: 5))
         ukrainianOption.tap()
@@ -39,7 +39,7 @@ final class LanguageUITests: XCTestCase {
         app.launch()
 
         app.tabBars.buttons["Налаштування"].tap()
-        app.buttons["settings.language"].tap()
+        app.scrollToAndTap("settings.language")
         let ukrainianOptionAfterRelaunch = app.buttons["languageSettings.option.uk"]
         XCTAssertTrue(ukrainianOptionAfterRelaunch.waitForExistence(timeout: 5))
         XCTAssertTrue(ukrainianOptionAfterRelaunch.isSelected)
