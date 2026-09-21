@@ -136,13 +136,10 @@ FeverLog/
 ├── Services/       — repositories, settings storage, sync
 ├── Theme/          — design tokens, appearance modes
 ├── Assets.xcassets
-├── Resources/
 ├── Utilities/
-├── Extensions/
-├── Database/       — bundled reference data (medication library, etc.)
+├── Database/       — ModelContainerFactory, PersistenceController
 ├── Preview/        — SwiftUI preview support / sample data
-├── Localization/   — String Catalog + typed L10n keys
-└── Widgets/
+└── Localization/   — String Catalog + typed L10n keys
 
 FeverLogEngine/     — pure Swift package: deterministic dose/safety math.
                        No SwiftUI, SwiftData, Supabase, or UIKit imports.
