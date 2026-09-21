@@ -236,4 +236,42 @@ struct PersistenceTests {
         #expect(pending.first?.entityID == entityID)
         #expect(pending.first?.status == .pending)
     }
+
+    // MARK: - Migration plan
+
+    // Uses an explicit on-disk URL (in a temp directory, cleaned up after)
+    // rather than `makeProductionContainer()` directly — that uses the
+    // default persistent store location, which a test shouldn't touch.
+    @Test("a store opened through the versioned schema and migration plan round-trips data")
+    func migrationPlanContainerRoundTripsData() throws {
+        let storeURL = URL.temporaryDirectory.appending(path: "\(UUID().uuidString).store")
+        defer {
+            for suffix in ["", "-shm", "-wal"] {
+                try? FileManager.default.removeItem(at: URL(fileURLWithPath: storeURL.path + suffix))
+            }
+        }
+
+        let schema = ModelContainerFactory.makeSchema()
+        let configuration = ModelConfiguration(schema: schema, url: storeURL)
+        let container = try ModelContainer(
+            for: schema,
+            migrationPlan: ModelContainerFactory.MigrationPlan.self,
+            configurations: [configuration]
+        )
+
+        let household = try SwiftDataHouseholdRepository(context: container.mainContext).createGuestHouseholdIfNeeded()
+
+        // Reopen against the same file through the same schema/migration
+        // path to confirm the data actually persisted to disk and survives
+        // a fresh container being opened against it — not just that the
+        // first container's in-memory state looked right.
+        let reopened = try ModelContainer(
+            for: schema,
+            migrationPlan: ModelContainerFactory.MigrationPlan.self,
+            configurations: [configuration]
+        )
+        let fetched = try SwiftDataHouseholdRepository(context: reopened.mainContext).fetchActiveHouseholds()
+        #expect(fetched.count == 1)
+        #expect(fetched.first?.id == household.id)
+    }
 }

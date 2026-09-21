@@ -198,11 +198,16 @@ window). Every field is reproducible from the same inputs; nothing is
 predicted, inferred, or fetched from a network service. `nil` is used
 explicitly to mean "insufficient data," never coerced to zero.
 
-> **Open item carried from Phase 7:** the exact fever-spike threshold and
-> episode-gap window need product/medical review before these insights
-> ship to real users beyond internal testing — see the `TODO` in
-> `FeverInsights.swift`. Release blocker if fever-spike insights are
-> exposed publicly.
+> **Update, Phase 11:** the exact fever-spike threshold and episode-gap
+> window were never reviewed against real pediatric guidance — the
+> threshold in `FeverInsightsConfiguration` was a placeholder, not
+> something sourced from a recognized authority. Rather than ship that
+> unreviewed, **the feature is now disabled**: `ChildFeverInsightsProvider`
+> and `FeverInsightsConfiguration` remain in the codebase, fully tested,
+> but `ChildProfileScreen` no longer surfaces them. See the `TODO` at the
+> top of `ChildProfileScreen.swift`. This will come back once real
+> thresholds from a recognized pediatric authority replace the
+> placeholder.
 
 ---
 
@@ -394,27 +399,52 @@ piece of work in its own right, not a Phase 10 add-on.
 
 ## Phase 11 — Release Hardening, Docs, Open-Source Repo Setup
 
-**Status: not started.**
+**Status: in progress.**
 
-Not yet scoped in detail. Known candidates based on what earlier phases
-left as open items:
+### Done
 
-- Resolve the Phase 7 fever-spike threshold/episode-gap TODO with
-  product/medical review before fever insights are shown beyond internal
-  testing (see Phase 7 above).
-- A versioned SwiftData migration plan — there is currently no migration
-  strategy for schema changes after the first release (see the `TODO` in
-  `PersistenceController.swift`).
-- Fill in `docs/architecture/README.md` (currently a stub) and expand
-  `CHANGELOG.md` (currently empty).
+- `CONTRIBUTING.md` filled in (build/test/lint commands, code conventions,
+  the `TODO(Phase X, topic): ...` comment convention, a note on translation
+  review).
+- `CHANGELOG.md` written (Keep a Changelog format, backfilled by phase).
+- `docs/architecture/README.md` filled in — the current, accurate
+  architecture summary, distinct from `offline-first.md`/`components.md`'s
+  original planning notes.
+- A versioned SwiftData migration plan
+  (`ModelContainerFactory.SchemaV1`/`MigrationPlan`), with a test that
+  round-trips data through an on-disk store opened via that path. Was a
+  standing `TODO` since Phase 2.
+- `PrivacyInfo.xcprivacy` added, declaring the app's one required-reason
+  API use (`UserDefaults`, device-local preferences only) and explicitly
+  zero tracking/data collection.
+- CI workflow versions investigated — `Xcode_16.app` and `iPhone 16` are
+  confirmed still valid on the current GitHub `macos-15` runner image
+  (verified against the runner-images repo's published software manifest,
+  not just inspection), and pinning to Xcode 16.0 is a deliberate choice
+  (the minimum Xcode with Swift 6 language mode support), not staleness.
+  No change needed.
+- GitHub issue templates (bug report, feature request) and a PR template
+  added under `.github/`.
+- Verified debug-only code (`UITestSupport` and everything gated behind
+  `#if DEBUG`) is completely absent from Release builds — not just
+  hidden behind a runtime check. Confirmed via Swift-demangled `nm` symbol
+  lookup against a real Release build (raw string-table scanning turned
+  out unreliable against Release's optimizations and gave a false
+  negative even for known-present strings, so symbol presence was the
+  methodology that actually held up).
+- Fever-spike insights disabled (see the Phase 7 entry above) — the
+  unreviewed threshold is no longer shown to users, though the tested
+  calculation code remains in place for when real thresholds arrive.
+
+### Remaining
+
 - Broaden translation coverage for the six non-English languages beyond
   the current "core" key subset (see Phase 10 above), or get native-speaker
   review on what's already there — every non-English string is currently
   marked `needs_review` in `Localizable.xcstrings`.
-- General open-source repo hygiene: issue/PR templates, a real
-  `CHANGELOG.md`, and a decision on whether/how the Dr.Baby clinic
-  distribution plan (QR code / download link, mentioned in `PLAN-mine.md`)
-  affects the public repo.
+- A decision on whether/how the Dr.Baby clinic distribution plan (QR code
+  / download link, mentioned in `PLAN-mine.md`) affects the public repo.
+- Final phase-wide test/lint/build verification and commit.
 
 ---
 

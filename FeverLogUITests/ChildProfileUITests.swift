@@ -25,7 +25,7 @@ final class ChildProfileUITests: XCTestCase {
         let nameField = app.textFields["childForm.name"]
         XCTAssertTrue(nameField.waitForExistence(timeout: 5))
         nameField.tap()
-        nameField.clearAndTypeText("Ava Marie")
+        nameField.replaceText(with: "Ava Marie")
         app.buttons["childForm.save"].tap()
 
         XCTAssertTrue(app.navigationBars["Ava Marie"].waitForExistence(timeout: 5))
@@ -63,34 +63,6 @@ final class ChildProfileUITests: XCTestCase {
         selector.tap()
         app.buttons["Ava"].tap()
         XCTAssertTrue(app.staticTexts["Ava"].waitForExistence(timeout: 5))
-    }
-
-    @MainActor
-    func testInsightsShowNoReadingsStateWhenChildHasNoTemperatureHistory() throws {
-        let app = XCUIApplication().launchFreshPastOnboarding()
-        app.createChild(named: "Ava", fromEmptyState: true)
-
-        app.buttons["home.childCard"].tap()
-
-        XCTAssertTrue(app.staticTexts["No recent temperature readings logged"].waitForExistence(timeout: 5))
-    }
-
-    @MainActor
-    func testInsightsAppearAfterLoggingAFeverReading() throws {
-        let app = XCUIApplication().launchFreshPastOnboarding()
-        app.createChild(named: "Ava", fromEmptyState: true)
-
-        app.buttons["home.quickAdd"].tap()
-        app.buttons["quickAdd.temperature"].tap()
-        let picker = app.pickerWheels.element
-        XCTAssertTrue(picker.waitForExistence(timeout: 5))
-        picker.adjust(toPickerWheelValue: "38.5°C")
-        app.buttons["temperatureEntry.save"].tap()
-
-        app.buttons["home.childCard"].tap()
-
-        XCTAssertTrue(app.staticTexts["Fever spikes (last 30 days)"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.staticTexts["1"].exists)
     }
 
     @MainActor

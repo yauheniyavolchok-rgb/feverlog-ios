@@ -35,7 +35,7 @@ final class SettingsScreensUITests: XCTestCase {
         let nameField = app.textFields["childForm.name"]
         XCTAssertTrue(nameField.waitForExistence(timeout: 5))
         nameField.tap()
-        nameField.clearAndTypeText("Nora Rose")
+        nameField.replaceText(with: "Nora Rose")
         app.buttons["childForm.save"].tap()
         XCTAssertTrue(app.staticTexts["Nora Rose"].waitForExistence(timeout: 5))
 
@@ -76,10 +76,7 @@ final class SettingsScreensUITests: XCTestCase {
         let nameField = app.textFields["householdSettings.name"]
         XCTAssertTrue(nameField.waitForExistence(timeout: 5))
         nameField.tap()
-        if let existing = nameField.value as? String, !existing.isEmpty {
-            nameField.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: existing.count))
-        }
-        nameField.typeText("The Smiths")
+        nameField.replaceText(with: "The Smiths")
         app.buttons["householdSettings.save"].tap()
 
         app.navigationBars.buttons.firstMatch.tap()

@@ -35,6 +35,7 @@ targets:
     resources:
       - path: FeverLog/Localization
       - path: FeverLog/Assets.xcassets
+      - path: FeverLog/PrivacyInfo.xcprivacy
     dependencies:
       - package: FeverLogEngine
         product: FeverLogEngine

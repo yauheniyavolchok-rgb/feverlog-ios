@@ -1,8 +1,7 @@
 import SwiftData
 
-// TODO(Phase 2, SwiftData migration plan): Add migration plans when the schema changes after the first release.
-// Completion: a versioned migration strategy and migration tests exist before the first schema-changing release.
-// Release blocker: yes for any release that changes the persisted schema without migration coverage.
+// See ModelContainerFactory.swift for the versioned-schema/migration-plan
+// setup (Phase 11) this container is built from.
 @MainActor
 final class PersistenceController {
     let container: ModelContainer

@@ -72,4 +72,21 @@ extension XCUIElement {
         }
         typeText(text)
     }
+
+    /// An alternative to `clearAndTypeText` for fields holding real
+    /// existing text (names, in practice) rather than a short numeric
+    /// value — the long-press-then-"Select All" callout `clearAndTypeText`
+    /// relies on has shown up as flaky specifically for this case
+    /// (confirmed via re-running in isolation, where it passes — a timing
+    /// race with the callout appearing, not a deterministic bug). Deleting
+    /// backward by the field's current length is unconditional and doesn't
+    /// depend on a system UI callout appearing in time. Assumes the field
+    /// was just tapped, so the cursor is wherever that leaves it, and
+    /// backspaces from there.
+    func replaceText(with text: String) {
+        if let existing = value as? String, !existing.isEmpty {
+            typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: existing.count))
+        }
+        typeText(text)
+    }
 }

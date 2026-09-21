@@ -1,6 +1,17 @@
 import SwiftData
 import SwiftUI
 
+// TODO(Phase 11, fever insights): Deliberately not surfacing
+// ChildFeverInsightsSummary here — the fever-spike threshold and
+// episode-gap window it's built on were never reviewed against real
+// pediatric guidance (see FeverInsightsConfiguration's own TODO). The
+// calculation itself stays in the codebase, tested, ready to wire back in
+// once real thresholds from a recognized authority replace the current
+// placeholder values.
+// Completion: ChildFeverInsightsProvider's configuration is backed by a
+// cited, reviewed source rather than a placeholder; this screen surfaces
+// it again.
+// Release blocker: no — the feature is off, not shipping unreviewed.
 struct ChildProfileScreen: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(ChildStore.self) private var childStore
@@ -11,7 +22,6 @@ struct ChildProfileScreen: View {
 
     @State private var activeWeight: WeightHistory?
     @State private var weightHistory: [WeightHistory] = []
-    @State private var insights: ChildFeverInsightsSummary?
     @State private var showingEditForm = false
     @State private var showingAddWeight = false
     @State private var showingDeleteConfirmation = false
@@ -63,10 +73,6 @@ struct ChildProfileScreen: View {
                 }
             }
 
-            Section(L10n.ChildProfile.recentIllnessTitle) {
-                insightsContent
-            }
-
             Section {
                 Button(L10n.ChildProfile.editButton) { showingEditForm = true }
                     .accessibilityIdentifier("childProfile.edit")
@@ -114,47 +120,6 @@ struct ChildProfileScreen: View {
         return String(format: "%.1f %@", activeWeight.weight, activeWeight.unit.rawValue)
     }
 
-    @ViewBuilder
-    private var insightsContent: some View {
-        if let insights, insights.hasAnyReadings {
-            insightRow(L10n.ChildProfile.insightSpikeCount, value: "\(insights.spikeCount)")
-            insightRow(L10n.ChildProfile.insightFeverDuration, value: durationText(insights.totalFeverDuration))
-            insightRow(
-                L10n.ChildProfile.insightFeverFreeInterval,
-                value: insights.longestFeverFreeInterval.map(durationText) ?? L10n.ChildProfile.insightInsufficientData
-            )
-            insightRow(
-                L10n.ChildProfile.insightTemperatureChange,
-                value: insights.temperatureChangeOverFourHours.map(changeText) ?? L10n.ChildProfile.insightInsufficientData
-            )
-        } else {
-            Text(L10n.ChildProfile.recentIllnessNoReadings)
-                .foregroundStyle(palette.secondaryText)
-        }
-    }
-
-    private func insightRow(_ label: String, value: String) -> some View {
-        HStack {
-            Text(label)
-                .foregroundStyle(palette.primaryText)
-            Spacer()
-            Text(value)
-                .foregroundStyle(palette.secondaryText)
-        }
-    }
-
-    private func durationText(_ interval: TimeInterval) -> String {
-        let formatter = DateComponentsFormatter()
-        formatter.allowedUnits = [.day, .hour, .minute]
-        formatter.unitsStyle = .abbreviated
-        formatter.maximumUnitCount = 2
-        return formatter.string(from: interval) ?? "0m"
-    }
-
-    private func changeText(_ change: Double) -> String {
-        String(format: "%+.1f°C", change)
-    }
-
     private func onEditFormDismissed() {
         Task { await loadData() }
     }
@@ -164,9 +129,6 @@ struct ChildProfileScreen: View {
             let weightRepository = SwiftDataWeightHistoryRepository(context: modelContext)
             activeWeight = try weightRepository.activeWeight(for: child, at: .now)
             weightHistory = try weightRepository.fetchHistory(for: child)
-
-            let insightsProvider = SwiftDataChildFeverInsightsProvider(context: modelContext)
-            insights = try insightsProvider.summary(for: child, withinDays: 30)
         } catch {
             // Non-fatal: leave prior state, surfaced only via empty/missing states.
         }

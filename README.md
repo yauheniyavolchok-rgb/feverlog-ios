@@ -5,9 +5,11 @@ history, and medication doses — with a deterministic, offline-capable
 medication safety engine and optional household sync. Built for free
 distribution in Dr.Baby clinics.
 
-> **Status:** Phases 0-9 complete (project foundation through Supabase auth
-> and household sync). See [ROADMAP.md](ROADMAP.md) for the phased
-> delivery plan.
+> **Status:** Phases 0-10 complete (project foundation through settings,
+> accessibility, localization, and performance measurement — widgets
+> explicitly deferred, see ROADMAP.md). Phase 11 (release hardening, docs,
+> open-source repo setup) in progress. See [ROADMAP.md](ROADMAP.md) for the
+> phased delivery plan.
 
 ## Requirements
 

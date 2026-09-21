@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Translation review
+    url: https://github.com/yauheniyavolchok-rgb/feverlog-ios/blob/main/CONTRIBUTING.md#translations
+    about: Six of the app's seven languages need native-speaker review — no code required.
