@@ -66,6 +66,7 @@ struct TemperatureEntryScreen: View {
             }
         }
         .navigationTitle(existingLog != nil && !isDuplicate ? L10n.TemperatureEntry.editTitle : L10n.TemperatureEntry.addTitle)
+        .announcesAccessibilityErrors(errorMessage)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button(L10n.TemperatureEntry.cancel) { dismiss() }

@@ -80,6 +80,7 @@ struct ChildFormScreen: View {
             }
         }
         .navigationTitle(existingChild == nil ? L10n.ChildForm.titleNew : L10n.ChildForm.titleEdit)
+        .announcesAccessibilityErrors(errorMessage)
         .task {
             if existingChild == nil {
                 weightUnit = unitsManager.defaultWeightUnit

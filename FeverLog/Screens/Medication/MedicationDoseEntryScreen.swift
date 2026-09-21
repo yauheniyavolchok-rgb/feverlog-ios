@@ -96,6 +96,7 @@ struct MedicationDoseEntryScreen: View {
             }
         }
         .navigationTitle(existingLog == nil ? L10n.MedicationEntry.addTitle : L10n.MedicationEntry.editTitle)
+        .announcesAccessibilityErrors(errorMessage)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button(L10n.MedicationEntry.cancel) { dismiss() }

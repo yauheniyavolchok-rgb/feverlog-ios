@@ -47,6 +47,7 @@ struct WeightEntryFormScreen: View {
             }
         }
         .navigationTitle(L10n.WeightForm.title)
+        .announcesAccessibilityErrors(errorMessage)
         .task { unit = unitsManager.defaultWeightUnit }
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {

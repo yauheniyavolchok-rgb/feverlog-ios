@@ -27,6 +27,7 @@ struct JoinHouseholdSheet: View {
                 }
             }
             .navigationTitle(L10n.Account.householdJoinTitle)
+            .announcesAccessibilityErrors(errorMessage)
             .disabled(isWorking)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

@@ -43,6 +43,7 @@ struct NoteEntryScreen: View {
             }
         }
         .navigationTitle(existingEntry != nil && !isDuplicate ? L10n.NoteEntry.editTitle : L10n.NoteEntry.addTitle)
+        .announcesAccessibilityErrors(errorMessage)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button(L10n.NoteEntry.cancel) { dismiss() }

@@ -42,6 +42,7 @@ struct SymptomEntryScreen: View {
             }
         }
         .navigationTitle(existingEntry != nil && !isDuplicate ? L10n.SymptomEntry.editTitle : L10n.SymptomEntry.addTitle)
+        .announcesAccessibilityErrors(errorMessage)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button(L10n.SymptomEntry.cancel) { dismiss() }

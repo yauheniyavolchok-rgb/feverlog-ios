@@ -49,6 +49,7 @@ struct ReminderFormScreen: View {
             }
         }
         .navigationTitle(existingReminder != nil ? L10n.Reminders.editTitle : L10n.Reminders.addTitle)
+        .announcesAccessibilityErrors(errorMessage)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button(L10n.Reminders.cancel) { dismiss() }

@@ -44,6 +44,7 @@ struct EmailLinkSheet: View {
                 }
             }
             .navigationTitle(L10n.Account.emailPromptTitle)
+            .announcesAccessibilityErrors(errorMessage)
             .disabled(isWorking)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

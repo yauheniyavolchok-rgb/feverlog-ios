@@ -5,7 +5,6 @@ struct HomeScreen: View {
     @Environment(ChildStore.self) private var childStore
     @Environment(\.modelContext) private var modelContext
     @Environment(\.feverPalette) private var palette
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @State private var showingAddChild = false
     @State private var showingQuickAdd = false

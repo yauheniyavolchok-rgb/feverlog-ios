@@ -37,6 +37,7 @@ struct HouseholdSettingsScreen: View {
             }
         }
         .navigationTitle(L10n.HouseholdSettings.title)
+        .announcesAccessibilityErrors(errorMessage)
         .task { displayName = childStore.household?.displayName ?? "" }
     }
 

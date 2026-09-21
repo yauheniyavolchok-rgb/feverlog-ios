@@ -37,6 +37,7 @@ struct AccountScreen: View {
             }
         }
         .navigationTitle(L10n.Account.title)
+        .announcesAccessibilityErrors(errorMessage)
         .disabled(isWorking)
         .sheet(isPresented: $showingEmailSheet) {
             EmailLinkSheet { errorMessage = nil }
