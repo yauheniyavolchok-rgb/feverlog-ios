@@ -24,6 +24,7 @@ enum TimelineItemKind {
     case medication(MedicationLog)
     case symptom(SymptomEntry)
     case note(NoteEntry)
+    case quickLog(QuickLogEntry)
 }
 
 struct TimelineItem: Identifiable {
@@ -37,6 +38,7 @@ struct TimelineItem: Identifiable {
         case .medication(let log): log.id
         case .symptom(let entry): entry.id
         case .note(let entry): entry.id
+        case .quickLog(let entry): entry.id
         }
     }
 }
@@ -46,6 +48,7 @@ enum TimelineEditTarget: Identifiable, Hashable {
     case medication(MedicationLog, MedicationRule, Child)
     case symptom(SymptomEntry, Child)
     case note(NoteEntry, Child)
+    case quickLog(QuickLogEntry, Child)
 
     var id: UUID {
         switch self {
@@ -53,6 +56,7 @@ enum TimelineEditTarget: Identifiable, Hashable {
         case .medication(let log, _, _): log.id
         case .symptom(let entry, _): entry.id
         case .note(let entry, _): entry.id
+        case .quickLog(let entry, _): entry.id
         }
     }
 
@@ -176,6 +180,10 @@ struct TimelineScreen: View {
             NoteEntryRow(entry: entry, owner: owner)
                 .listRowSeparator(.hidden)
                 .swipeActions(edge: .trailing) { actions.note(entry, child: item.child) }
+        case .quickLog(let entry):
+            QuickLogEntryRow(entry: entry, owner: owner)
+                .listRowSeparator(.hidden)
+                .swipeActions(edge: .trailing) { actions.quickLog(entry, child: item.child) }
         }
     }
 
@@ -196,6 +204,10 @@ struct TimelineScreen: View {
             }
         case .note(let entry, let child):
             NoteEntryScreen(child: child, existingEntry: entry) {
+                Task { await reload() }
+            }
+        case .quickLog(let entry, _):
+            QuickLogEntryEditScreen(existingEntry: entry) {
                 Task { await reload() }
             }
         }
@@ -227,6 +239,7 @@ struct TimelineScreen: View {
         let medicationRepository = SwiftDataMedicationLogRepository(context: modelContext)
         let symptomRepository = SwiftDataSymptomEntryRepository(context: modelContext)
         let noteRepository = SwiftDataNoteEntryRepository(context: modelContext)
+        let quickLogRepository = SwiftDataQuickLogEntryRepository(context: modelContext)
 
         var result: [TimelineItem] = []
         for child in childStore.children {
@@ -248,6 +261,11 @@ struct TimelineScreen: View {
             let noteEntries = (try? noteRepository.fetchAll(for: child)) ?? []
             result.append(contentsOf: noteEntries.map {
                 TimelineItem(child: child, date: $0.recordedAt, kind: .note($0))
+            })
+
+            let quickLogEntries = (try? quickLogRepository.fetchAll(for: child)) ?? []
+            result.append(contentsOf: quickLogEntries.map {
+                TimelineItem(child: child, date: $0.recordedAt, kind: .quickLog($0))
             })
         }
         items = result

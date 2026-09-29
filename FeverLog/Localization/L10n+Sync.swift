@@ -24,6 +24,10 @@ extension L10n {
         static var symptomsEmpty: String { localized("charts.symptoms.empty") }
         static var symptomsBarAccessibility: String { localized("charts.symptoms.bar.accessibility") }
 
+        static var quickLogTitle: String { localized("charts.quickLog.title") }
+        static var quickLogEmpty: String { localized("charts.quickLog.empty") }
+        static var quickLogBarAccessibility: String { localized("charts.quickLog.bar.accessibility") }
+
         static var noChildTitle: String { localized("charts.noChild.title") }
         static var noChildMessage: String { localized("charts.noChild.message") }
     }

@@ -8,7 +8,11 @@ import SwiftData
 /// `true` only if the remote record actually won and was applied.
 @MainActor
 final class SyncDownloadImporter {
-    private let context: ModelContext
+    // Not private: `importQuickLog` lives in a separate extension file
+    // (SyncDownloadImporter+QuickLog.swift, split out purely to stay under
+    // SwiftLint's type-body-length limit) and needs access to this and the
+    // shared helpers below.
+    let context: ModelContext
 
     init(context: ModelContext) {
         self.context = context
@@ -234,14 +238,14 @@ final class SyncDownloadImporter {
         return true
     }
 
-    private func shouldApply(remote: some RemoteSyncTimestamped, localID: UUID, localUpdatedAt: Date) -> Bool {
+    func shouldApply(remote: some RemoteSyncTimestamped, localID: UUID, localUpdatedAt: Date) -> Bool {
         ConflictResolver.remoteWins(
             local: SyncVersionMetadata(id: localID.uuidString, updatedAt: localUpdatedAt),
             remote: SyncVersionMetadata(id: remote.id.uuidString, updatedAt: remote.updatedAt)
         )
     }
 
-    private func fetchOne<T: PersistentModel>(_ type: T.Type, predicate: Predicate<T>) -> T? {
+    func fetchOne<T: PersistentModel>(_ type: T.Type, predicate: Predicate<T>) -> T? {
         var descriptor = FetchDescriptor<T>(predicate: predicate)
         descriptor.fetchLimit = 1
         return try? context.fetch(descriptor).first
@@ -268,3 +272,4 @@ extension TemperatureLogRemoteRecord: RemoteSyncTimestamped {}
 extension MedicationLogRemoteRecord: RemoteSyncTimestamped {}
 extension SymptomRemoteRecord: RemoteSyncTimestamped {}
 extension NoteRemoteRecord: RemoteSyncTimestamped {}
+extension QuickLogRemoteRecord: RemoteSyncTimestamped {}

@@ -9,6 +9,7 @@ struct ChartsScreen: View {
     @State private var readings: [TemperatureReading] = []
     @State private var medicationEvents: [MedicationEvent] = []
     @State private var symptomObservations: [SymptomObservation] = []
+    @State private var quickLogObservations: [QuickLogObservation] = []
 
     private var filteredReadings: [TemperatureReading] {
         ChartDataAggregator.temperatureReadings(readings, in: range)
@@ -20,6 +21,10 @@ struct ChartsScreen: View {
 
     private var symptomFrequencies: [SymptomFrequency] {
         ChartDataAggregator.symptomFrequency(symptomObservations, in: range)
+    }
+
+    private var quickLogFrequencies: [QuickLogFrequency] {
+        ChartDataAggregator.quickLogFrequency(quickLogObservations, in: range)
     }
 
     var body: some View {
@@ -37,6 +42,7 @@ struct ChartsScreen: View {
                         TemperatureChartView(readings: filteredReadings, medicationEvents: filteredMedicationEvents)
                         MedicationTimelineChartView(events: filteredMedicationEvents)
                         SymptomFrequencyChartView(frequencies: symptomFrequencies)
+                        QuickLogFrequencyChartView(frequencies: quickLogFrequencies)
                     }
                     .padding(Spacing.md)
                 }
@@ -63,6 +69,7 @@ struct ChartsScreen: View {
             readings = []
             medicationEvents = []
             symptomObservations = []
+            quickLogObservations = []
             return
         }
 
@@ -79,6 +86,11 @@ struct ChartsScreen: View {
             entry.symptomIdentifiers.compactMap { identifier in
                 SymptomCategory(rawValue: identifier).map { SymptomObservation(category: $0, recordedAt: entry.recordedAt) }
             }
+        }
+
+        let quickLogEntries = (try? SwiftDataQuickLogEntryRepository(context: modelContext).fetchAll(for: child)) ?? []
+        quickLogObservations = quickLogEntries.map {
+            QuickLogObservation(type: $0.type, recordedAt: $0.recordedAt)
         }
     }
 }

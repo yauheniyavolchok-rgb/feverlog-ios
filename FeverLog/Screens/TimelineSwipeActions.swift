@@ -116,6 +116,30 @@ struct TimelineSwipeActions {
         .tint(palette.accentLavender)
     }
 
+    @ViewBuilder
+    func quickLog(_ entry: QuickLogEntry, child: Child) -> some View {
+        Button(role: .destructive) {
+            try? SwiftDataQuickLogEntryRepository(context: modelContext).softDelete(entry)
+            onReload()
+        } label: {
+            Label(L10n.Timeline.delete, systemImage: "trash")
+        }
+        Button {
+            let repository = SwiftDataQuickLogEntryRepository(context: modelContext)
+            _ = try? repository.create(type: entry.type, degree: entry.degree, recordedAt: .now, child: child)
+            onReload()
+        } label: {
+            Label(L10n.Timeline.duplicate, systemImage: "plus.square.on.square")
+        }
+        .tint(palette.accentBlue)
+        Button {
+            onEdit(.quickLog(entry, child))
+        } label: {
+            Label(L10n.Timeline.edit, systemImage: "pencil")
+        }
+        .tint(palette.accentLavender)
+    }
+
     private func duplicateMedication(_ log: MedicationLog, child: Child) {
         let newLog = MedicationLog(
             child: child,

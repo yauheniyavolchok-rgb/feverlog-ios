@@ -28,6 +28,7 @@ enum ModelContainerFactory {
                 SymptomEntry.self,
                 NoteEntry.self,
                 Reminder.self,
+                QuickLogEntry.self,
                 SyncQueueItem.self
             ]
         }

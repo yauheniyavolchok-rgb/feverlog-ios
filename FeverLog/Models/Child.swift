@@ -39,6 +39,9 @@ final class Child {
     @Relationship(deleteRule: .cascade, inverse: \NoteEntry.child)
     var notes: [NoteEntry] = []
 
+    @Relationship(deleteRule: .cascade, inverse: \QuickLogEntry.child)
+    var quickLogs: [QuickLogEntry] = []
+
     @Relationship(deleteRule: .cascade, inverse: \Reminder.child)
     var reminders: [Reminder] = []
 

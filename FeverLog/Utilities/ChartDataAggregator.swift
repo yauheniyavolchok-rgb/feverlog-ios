@@ -22,6 +22,19 @@ struct SymptomFrequency: Equatable, Sendable, Identifiable {
     let count: Int
 }
 
+/// A single quick-log observation (food/drink/pee/poop/vomit/breath), one
+/// per logged entry — mirrors `SymptomObservation`.
+struct QuickLogObservation: Equatable, Sendable {
+    let type: QuickLogType
+    let recordedAt: Date
+}
+
+struct QuickLogFrequency: Equatable, Sendable, Identifiable {
+    var id: QuickLogType { type }
+    let type: QuickLogType
+    let count: Int
+}
+
 /// Deterministic, local-only chart data preparation. No AI, no machine
 /// learning, no external services — every result is reproducible from the
 /// same records and time range. Filtering bounds are inclusive on both ends.
@@ -65,6 +78,26 @@ enum ChartDataAggregator {
         return SymptomCategory.allCases.compactMap { category in
             guard let count = counts[category], count > 0 else { return nil }
             return SymptomFrequency(category: category, count: count)
+        }
+    }
+
+    /// Counts observations per quick-log type within the range, omitting
+    /// types with zero occurrences. Order follows `QuickLogType`'s
+    /// declaration order for a stable, deterministic chart axis.
+    static func quickLogFrequency(
+        _ observations: [QuickLogObservation],
+        in range: ChartTimeRange,
+        referenceDate: Date = .now
+    ) -> [QuickLogFrequency] {
+        let bounds = range.bounds(endingAt: referenceDate)
+        let filtered = observations.filter { $0.recordedAt >= bounds.start && $0.recordedAt <= bounds.end }
+        var counts: [QuickLogType: Int] = [:]
+        for observation in filtered {
+            counts[observation.type, default: 0] += 1
+        }
+        return QuickLogType.allCases.compactMap { type in
+            guard let count = counts[type], count > 0 else { return nil }
+            return QuickLogFrequency(type: type, count: count)
         }
     }
 }

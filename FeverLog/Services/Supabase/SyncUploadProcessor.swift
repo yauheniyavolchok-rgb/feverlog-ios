@@ -78,6 +78,8 @@ final class SyncUploadProcessor {
             return fetchOne(SymptomEntry.self, predicate: #Predicate { $0.id == entityID }).flatMap(encode)
         case "notes":
             return fetchOne(NoteEntry.self, predicate: #Predicate { $0.id == entityID }).flatMap(encode)
+        case "quick_logs":
+            return fetchOne(QuickLogEntry.self, predicate: #Predicate { $0.id == entityID }).flatMap(encode)
         default:
             return nil
         }
@@ -192,6 +194,21 @@ final class SyncUploadProcessor {
             id: entry.id,
             childID: entry.childID,
             text: entry.text,
+            recordedAt: entry.recordedAt,
+            createdBy: currentUserID,
+            createdAt: entry.createdAt,
+            updatedAt: entry.updatedAt,
+            deletedAt: entry.deletedAt
+        )
+        return try? decodeToJSON(record)
+    }
+
+    private func encode(_ entry: QuickLogEntry) -> AnyJSON? {
+        let record = QuickLogRemoteRecord(
+            id: entry.id,
+            childID: entry.childID,
+            type: entry.type.rawValue,
+            degree: entry.degree,
             recordedAt: entry.recordedAt,
             createdBy: currentUserID,
             createdAt: entry.createdAt,

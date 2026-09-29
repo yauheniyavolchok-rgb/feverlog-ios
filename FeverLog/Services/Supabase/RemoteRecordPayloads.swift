@@ -181,3 +181,27 @@ struct NoteRemoteRecord: Codable {
         case deletedAt = "deleted_at"
     }
 }
+
+struct QuickLogRemoteRecord: Codable {
+    let id: UUID
+    let childID: UUID
+    let type: String
+    let degree: Int
+    let recordedAt: Date
+    let createdBy: UUID?
+    let createdAt: Date
+    let updatedAt: Date
+    let deletedAt: Date?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case childID = "child_id"
+        case type
+        case degree
+        case recordedAt = "recorded_at"
+        case createdBy = "created_by"
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
+        case deletedAt = "deleted_at"
+    }
+}

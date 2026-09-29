@@ -19,7 +19,9 @@ final class RealtimeSyncSubscriber {
     private var channel: RealtimeChannelV2?
     private var subscriptions: [RealtimeSubscription] = []
 
-    private static let childScopedTables = ["weight_history", "temperature_logs", "medication_logs", "symptoms", "notes"]
+    private static let childScopedTables = [
+        "weight_history", "temperature_logs", "medication_logs", "symptoms", "notes", "quick_logs"
+    ]
 
     init(client: SupabaseClient, context: ModelContext) {
         self.client = client
@@ -96,6 +98,10 @@ final class RealtimeSyncSubscriber {
         case "notes":
             try dispatchChildScoped(
                 data: data, importer: importer, import: importer.importNote, childID: \NoteRemoteRecord.childID
+            )
+        case "quick_logs":
+            try dispatchChildScoped(
+                data: data, importer: importer, import: importer.importQuickLog, childID: \QuickLogRemoteRecord.childID
             )
         default:
             break

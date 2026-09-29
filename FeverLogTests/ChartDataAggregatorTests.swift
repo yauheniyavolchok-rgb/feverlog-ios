@@ -112,4 +112,41 @@ struct ChartDataAggregatorTests {
     func emptySymptomData() {
         #expect(ChartDataAggregator.symptomFrequency([], in: .hours24, referenceDate: now).isEmpty)
     }
+
+    // MARK: - Quick log frequency aggregation
+
+    @Test("counts observations per type and omits zero-count types")
+    func countsPerQuickLogType() {
+        let observations = [
+            QuickLogObservation(type: .food, recordedAt: now),
+            QuickLogObservation(type: .food, recordedAt: now.addingTimeInterval(-3600)),
+            QuickLogObservation(type: .vomit, recordedAt: now)
+        ]
+        let result = ChartDataAggregator.quickLogFrequency(observations, in: .days3, referenceDate: now)
+        let byType = Dictionary(uniqueKeysWithValues: result.map { ($0.type, $0.count) })
+        #expect(byType[.food] == 2)
+        #expect(byType[.vomit] == 1)
+        #expect(byType[.breath] == nil)
+    }
+
+    @Test("quick log frequency result is ordered by type declaration order")
+    func orderedByQuickLogDeclarationOrder() {
+        let observations = [
+            QuickLogObservation(type: .breath, recordedAt: now),
+            QuickLogObservation(type: .food, recordedAt: now)
+        ]
+        let result = ChartDataAggregator.quickLogFrequency(observations, in: .days3, referenceDate: now)
+        #expect(result.map(\.type) == [.food, .breath])
+    }
+
+    @Test("observations outside the range are excluded from quick log frequency counts")
+    func excludesOldObservationsFromQuickLogFrequency() {
+        let observations = [QuickLogObservation(type: .pee, recordedAt: now.addingTimeInterval(-30 * 24 * 3600))]
+        #expect(ChartDataAggregator.quickLogFrequency(observations, in: .days14, referenceDate: now).isEmpty)
+    }
+
+    @Test("empty quick log data produces an empty result without crashing")
+    func emptyQuickLogData() {
+        #expect(ChartDataAggregator.quickLogFrequency([], in: .hours24, referenceDate: now).isEmpty)
+    }
 }
