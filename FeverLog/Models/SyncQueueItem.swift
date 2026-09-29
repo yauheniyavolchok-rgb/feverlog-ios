@@ -32,6 +32,12 @@ final class SyncQueueItem {
     var nextRetryAt: Date?
     var idempotencyKey: String
 
+    /// Set only by `markCompleted`. Lets completed items be predicate-
+    /// filtered out (and eventually purged) without needing to compare
+    /// `status`, which SwiftData's `#Predicate` macro can't do since it's
+    /// a Codable enum.
+    var completedAt: Date?
+
     init(
         id: UUID = UUID(),
         entityType: String,
@@ -52,5 +58,6 @@ final class SyncQueueItem {
         self.lastError = nil
         self.status = .pending
         self.nextRetryAt = nil
+        self.completedAt = nil
     }
 }

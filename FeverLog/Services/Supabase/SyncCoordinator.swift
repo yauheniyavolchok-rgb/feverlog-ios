@@ -26,11 +26,18 @@ final class SyncCoordinator {
         )
         await householdCoordinator.bootstrapIfNeeded()
 
+        let queueRepository = SwiftDataSyncQueueRepository(context: context)
         let uploadProcessor = SyncUploadProcessor(
             context: context,
-            queueRepository: SwiftDataSyncQueueRepository(context: context),
+            queueRepository: queueRepository,
             uploadClient: client.map(LiveSyncUploadClient.init)
         )
         await uploadProcessor.processPendingUploads()
+
+        // Runs every cycle (cheap — predicate-scoped to old completed rows
+        // only) rather than on a separate timer, so the queue table never
+        // accumulates unbounded regardless of how often the app is opened.
+        let purgeCutoff = Calendar(identifier: .gregorian).date(byAdding: .day, value: -30, to: .now) ?? .now
+        try? queueRepository.purgeCompleted(olderThan: purgeCutoff)
     }
 }

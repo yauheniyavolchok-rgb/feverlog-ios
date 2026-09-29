@@ -117,4 +117,39 @@ struct SyncQueueRepositoryTests {
         #expect(item.lastError == nil)
         #expect(item.nextRetryAt == nil)
     }
+
+    @Test("markCompleted stamps completedAt")
+    func markCompletedStampsCompletedAt() throws {
+        let container = try makeContainer()
+        let repository = SwiftDataSyncQueueRepository(context: container.mainContext)
+        let item = try repository.enqueueOrCoalesce(entityType: "notes", entityID: UUID(), operationType: .upsert, payload: nil)
+
+        #expect(item.completedAt == nil)
+        try repository.markCompleted(item)
+        #expect(item.completedAt != nil)
+    }
+
+    @Test("purgeCompleted deletes only completed items older than the cutoff")
+    func purgeCompletedDeletesOnlyOldCompletedItems() throws {
+        let container = try makeContainer()
+        let repository = SwiftDataSyncQueueRepository(context: container.mainContext)
+        let context = container.mainContext
+
+        let oldCompleted = try repository.enqueueOrCoalesce(entityType: "notes", entityID: UUID(), operationType: .upsert, payload: nil)
+        try repository.markCompleted(oldCompleted)
+        oldCompleted.completedAt = .now.addingTimeInterval(-60 * 60 * 24 * 40)
+
+        let recentCompleted = try repository.enqueueOrCoalesce(entityType: "notes", entityID: UUID(), operationType: .upsert, payload: nil)
+        try repository.markCompleted(recentCompleted)
+
+        let stillPending = try repository.enqueueOrCoalesce(entityType: "notes", entityID: UUID(), operationType: .upsert, payload: nil)
+
+        try context.save()
+        try repository.purgeCompleted(olderThan: .now.addingTimeInterval(-60 * 60 * 24 * 30))
+
+        let remainingIDs = Set(try context.fetch(FetchDescriptor<SyncQueueItem>()).map(\.id))
+        #expect(!remainingIDs.contains(oldCompleted.id))
+        #expect(remainingIDs.contains(recentCompleted.id))
+        #expect(remainingIDs.contains(stillPending.id))
+    }
 }
