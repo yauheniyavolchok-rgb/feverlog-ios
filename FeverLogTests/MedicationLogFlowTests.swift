@@ -211,4 +211,31 @@ struct MedicationLogFlowTests {
 
         #expect(try repository.fetchAll(for: child).count == 1)
     }
+
+    @Test("fetchAll(since:) and hasEntry(before:) are scoped to administeredAt against the cutoff")
+    func dateBoundedFetchAndExistenceCheck() throws {
+        let container = try makeContainer()
+        let child = try makeChild(in: container)
+        let rule = try paracetamolRule()
+        let repository = SwiftDataMedicationLogRepository(context: container.mainContext)
+        let cutoff = Date(timeIntervalSinceNow: -3600)
+
+        #expect(try repository.hasEntry(for: child, before: cutoff) == false)
+
+        let result = evaluate(rule: rule, volume: 5, weight: .missing, at: .now, priorLogs: [])
+        let olderLog = makeLog(
+            child: child, rule: rule, volumeMilliliters: 5, result: result,
+            weightKilograms: nil, administeredAt: cutoff.addingTimeInterval(-60)
+        )
+        try repository.create(olderLog)
+        let recentLog = makeLog(
+            child: child, rule: rule, volumeMilliliters: 5, result: result,
+            weightKilograms: nil, administeredAt: .now
+        )
+        try repository.create(recentLog)
+
+        let sinceLogs = try repository.fetchAll(for: child, since: cutoff)
+        #expect(sinceLogs.map(\.id) == [recentLog.id])
+        #expect(try repository.hasEntry(for: child, before: cutoff) == true)
+    }
 }

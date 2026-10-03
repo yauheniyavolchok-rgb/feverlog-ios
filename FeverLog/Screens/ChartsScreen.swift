@@ -73,22 +73,27 @@ struct ChartsScreen: View {
             return
         }
 
-        let temperatureLogs = (try? SwiftDataTemperatureLogRepository(context: modelContext).fetchAll(for: child)) ?? []
+        // `days14` is the widest option the range picker offers, so there's
+        // never a reason to fetch further back than that — the picker's
+        // narrower ranges filter this already-bounded set client-side.
+        let cutoff = ChartTimeRange.days14.bounds().start
+
+        let temperatureLogs = (try? SwiftDataTemperatureLogRepository(context: modelContext).fetchAll(for: child, since: cutoff)) ?? []
         readings = temperatureLogs.map { TemperatureReading(celsius: $0.temperatureCelsius, recordedAt: $0.recordedAt) }
 
-        let medicationLogs = (try? SwiftDataMedicationLogRepository(context: modelContext).fetchAll(for: child)) ?? []
+        let medicationLogs = (try? SwiftDataMedicationLogRepository(context: modelContext).fetchAll(for: child, since: cutoff)) ?? []
         medicationEvents = medicationLogs.map {
             MedicationEvent(id: $0.id, administeredAt: $0.administeredAt, medicationName: $0.brandSnapshot)
         }
 
-        let symptomEntries = (try? SwiftDataSymptomEntryRepository(context: modelContext).fetchAll(for: child)) ?? []
+        let symptomEntries = (try? SwiftDataSymptomEntryRepository(context: modelContext).fetchAll(for: child, since: cutoff)) ?? []
         symptomObservations = symptomEntries.flatMap { entry in
             entry.symptomIdentifiers.compactMap { identifier in
                 SymptomCategory(rawValue: identifier).map { SymptomObservation(category: $0, recordedAt: entry.recordedAt) }
             }
         }
 
-        let quickLogEntries = (try? SwiftDataQuickLogEntryRepository(context: modelContext).fetchAll(for: child)) ?? []
+        let quickLogEntries = (try? SwiftDataQuickLogEntryRepository(context: modelContext).fetchAll(for: child, since: cutoff)) ?? []
         quickLogObservations = quickLogEntries.map {
             QuickLogObservation(type: $0.type, recordedAt: $0.recordedAt)
         }

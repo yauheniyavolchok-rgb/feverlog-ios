@@ -76,6 +76,27 @@ struct SymptomEntryRepositoryTests {
         #expect(entry.deletedAt != nil)
         #expect(try repository.fetchAll(for: child).isEmpty)
     }
+
+    @Test("fetchAll(since:) and hasEntry(before:) are scoped to recordedAt against the cutoff")
+    func dateBoundedFetchAndExistenceCheck() throws {
+        let container = try makeContainer()
+        let child = try makeChild(in: container)
+        let repository = SwiftDataSymptomEntryRepository(context: container.mainContext)
+        let cutoff = Date(timeIntervalSinceNow: -3600)
+
+        #expect(try repository.hasEntry(for: child, before: cutoff) == false)
+
+        _ = try repository.create(
+            symptomIdentifiers: [SymptomCategory.pain.rawValue], recordedAt: cutoff.addingTimeInterval(-60), child: child
+        )
+        let recent = try repository.create(
+            symptomIdentifiers: [SymptomCategory.general.rawValue], recordedAt: .now, child: child
+        )
+
+        let sinceEntries = try repository.fetchAll(for: child, since: cutoff)
+        #expect(sinceEntries.map(\.id) == [recent.id])
+        #expect(try repository.hasEntry(for: child, before: cutoff) == true)
+    }
 }
 
 @MainActor
@@ -134,5 +155,22 @@ struct NoteEntryRepositoryTests {
 
         #expect(entry.deletedAt != nil)
         #expect(try repository.fetchAll(for: child).isEmpty)
+    }
+
+    @Test("fetchAll(since:) and hasEntry(before:) are scoped to recordedAt against the cutoff")
+    func dateBoundedFetchAndExistenceCheck() throws {
+        let container = try makeContainer()
+        let child = try makeChild(in: container)
+        let repository = SwiftDataNoteEntryRepository(context: container.mainContext)
+        let cutoff = Date(timeIntervalSinceNow: -3600)
+
+        #expect(try repository.hasEntry(for: child, before: cutoff) == false)
+
+        _ = try repository.create(text: "Older note", recordedAt: cutoff.addingTimeInterval(-60), child: child)
+        let recent = try repository.create(text: "Recent note", recordedAt: .now, child: child)
+
+        let sinceEntries = try repository.fetchAll(for: child, since: cutoff)
+        #expect(sinceEntries.map(\.id) == [recent.id])
+        #expect(try repository.hasEntry(for: child, before: cutoff) == true)
     }
 }

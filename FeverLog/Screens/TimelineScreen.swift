@@ -79,6 +79,13 @@ struct TimelineScreen: View {
     @State private var sortMode: TimelineSortMode = .time
     @State private var editTarget: TimelineEditTarget?
 
+    /// How far back `reload()` fetches, in 14-day increments — starts
+    /// covering just the most recent window; "Load more" grows it rather
+    /// than ever fetching the full, unbounded history at once.
+    @State private var windowDays = 14
+    @State private var hasMoreHistory = true
+    @State private var isLoadingMore = false
+
     private var dayGroups: [TimelineDayGroup<TimelineItem>] {
         TimelineGrouping.groupByDay(items, date: \.date)
     }
@@ -99,7 +106,12 @@ struct TimelineScreen: View {
                     title: L10n.Screens.timelineTitle,
                     message: L10n.Screens.timelinePlaceholderMessage
                 )
-            } else if items.isEmpty {
+            } else if items.isEmpty && !hasMoreHistory {
+                // `!hasMoreHistory` matters here: an empty *current window*
+                // with older history still available (e.g. nothing logged
+                // in the last 14 days but plenty before that) must not be
+                // confused with truly no history ever — that's what the
+                // "Load more" row below is for instead.
                 EmptyStateView(
                     systemImage: Icon.timeline,
                     title: L10n.Timeline.emptyTitle,
@@ -125,6 +137,10 @@ struct TimelineScreen: View {
                                 }
                             }
                         }
+                    }
+
+                    if hasMoreHistory {
+                        loadMoreRow
                     }
                 }
                 .listStyle(.plain)
@@ -223,6 +239,25 @@ struct TimelineScreen: View {
         }
     }
 
+    private var loadMoreRow: some View {
+        Button {
+            Task { await loadMore() }
+        } label: {
+            HStack {
+                Spacer()
+                if isLoadingMore {
+                    ProgressView()
+                } else {
+                    Text(L10n.Timeline.loadMore)
+                }
+                Spacer()
+            }
+        }
+        .disabled(isLoadingMore)
+        .listRowSeparator(.hidden)
+        .accessibilityIdentifier("timeline.loadMore")
+    }
+
     private func dayLabel(for day: Date) -> String {
         let calendar = Calendar.current
         if calendar.isDateInToday(day) { return L10n.Timeline.today }
@@ -234,6 +269,7 @@ struct TimelineScreen: View {
 
     private func reload() async {
         medications = MedicationCatalog.loadBundled()
+        let cutoff = Calendar.current.date(byAdding: .day, value: -windowDays, to: .now) ?? .now
 
         let temperatureRepository = SwiftDataTemperatureLogRepository(context: modelContext)
         let medicationRepository = SwiftDataMedicationLogRepository(context: modelContext)
@@ -242,32 +278,50 @@ struct TimelineScreen: View {
         let quickLogRepository = SwiftDataQuickLogEntryRepository(context: modelContext)
 
         var result: [TimelineItem] = []
+        var moreHistoryExists = false
         for child in childStore.children {
-            let temperatureLogs = (try? temperatureRepository.fetchAll(for: child)) ?? []
+            let temperatureLogs = (try? temperatureRepository.fetchAll(for: child, since: cutoff)) ?? []
             result.append(contentsOf: temperatureLogs.map {
                 TimelineItem(child: child, date: $0.recordedAt, kind: .temperature($0))
             })
 
-            let medicationLogs = (try? medicationRepository.fetchAll(for: child)) ?? []
+            let medicationLogs = (try? medicationRepository.fetchAll(for: child, since: cutoff)) ?? []
             result.append(contentsOf: medicationLogs.map {
                 TimelineItem(child: child, date: $0.administeredAt, kind: .medication($0))
             })
 
-            let symptomEntries = (try? symptomRepository.fetchAll(for: child)) ?? []
+            let symptomEntries = (try? symptomRepository.fetchAll(for: child, since: cutoff)) ?? []
             result.append(contentsOf: symptomEntries.map {
                 TimelineItem(child: child, date: $0.recordedAt, kind: .symptom($0))
             })
 
-            let noteEntries = (try? noteRepository.fetchAll(for: child)) ?? []
+            let noteEntries = (try? noteRepository.fetchAll(for: child, since: cutoff)) ?? []
             result.append(contentsOf: noteEntries.map {
                 TimelineItem(child: child, date: $0.recordedAt, kind: .note($0))
             })
 
-            let quickLogEntries = (try? quickLogRepository.fetchAll(for: child)) ?? []
+            let quickLogEntries = (try? quickLogRepository.fetchAll(for: child, since: cutoff)) ?? []
             result.append(contentsOf: quickLogEntries.map {
                 TimelineItem(child: child, date: $0.recordedAt, kind: .quickLog($0))
             })
+
+            if !moreHistoryExists {
+                moreHistoryExists = (try? temperatureRepository.hasEntry(for: child, before: cutoff)) == true
+                    || (try? medicationRepository.hasEntry(for: child, before: cutoff)) == true
+                    || (try? symptomRepository.hasEntry(for: child, before: cutoff)) == true
+                    || (try? noteRepository.hasEntry(for: child, before: cutoff)) == true
+                    || (try? quickLogRepository.hasEntry(for: child, before: cutoff)) == true
+            }
         }
         items = result
+        hasMoreHistory = moreHistoryExists
+    }
+
+    private func loadMore() async {
+        guard !isLoadingMore else { return }
+        isLoadingMore = true
+        windowDays += 14
+        await reload()
+        isLoadingMore = false
     }
 }

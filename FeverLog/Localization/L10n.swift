@@ -128,6 +128,7 @@ enum L10n {
         static var sortLabel: String { localized("timeline.sort.label") }
         static var sortByTime: String { localized("timeline.sort.byTime") }
         static var sortByChild: String { localized("timeline.sort.byChild") }
+        static var loadMore: String { localized("timeline.loadMore") }
     }
 
     enum ChildForm {

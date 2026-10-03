@@ -3028,6 +3028,17 @@
         }
       }
     },
+    "timeline.loadMore": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Load more"
+          }
+        }
+      }
+    },
     "timeline.sort.byChild": {
       "extractionState": "manual",
       "localizations": {

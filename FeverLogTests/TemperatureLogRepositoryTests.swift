@@ -101,4 +101,38 @@ struct TemperatureLogRepositoryTests {
         #expect(try repository.fetchAll(for: childA).count == 1)
         #expect(try repository.fetchAll(for: childB).count == 1)
     }
+
+    @Test("fetchAll(since:) excludes logs recorded before the cutoff")
+    func fetchSinceExcludesOlderLogs() throws {
+        let container = try makeContainer()
+        let child = try makeChild(in: container)
+        let repository = SwiftDataTemperatureLogRepository(context: container.mainContext)
+        let cutoff = Date(timeIntervalSinceNow: -3600)
+
+        _ = try repository.create(
+            temperatureCelsius: 37.0, measurementMethod: .oral, recordedAt: cutoff.addingTimeInterval(-60), note: nil, child: child
+        )
+        let recent = try repository.create(
+            temperatureCelsius: 38.2, measurementMethod: .ear, recordedAt: .now, note: nil, child: child
+        )
+
+        let logs = try repository.fetchAll(for: child, since: cutoff)
+        #expect(logs.map(\.id) == [recent.id])
+    }
+
+    @Test("hasEntry(before:) reflects whether anything older than the cutoff exists")
+    func hasEntryBeforeCutoff() throws {
+        let container = try makeContainer()
+        let child = try makeChild(in: container)
+        let repository = SwiftDataTemperatureLogRepository(context: container.mainContext)
+        let cutoff = Date(timeIntervalSinceNow: -3600)
+
+        #expect(try repository.hasEntry(for: child, before: cutoff) == false)
+
+        _ = try repository.create(
+            temperatureCelsius: 37.0, measurementMethod: .oral, recordedAt: cutoff.addingTimeInterval(-60), note: nil, child: child
+        )
+
+        #expect(try repository.hasEntry(for: child, before: cutoff) == true)
+    }
 }

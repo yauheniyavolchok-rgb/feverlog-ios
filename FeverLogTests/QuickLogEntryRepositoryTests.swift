@@ -76,4 +76,21 @@ struct QuickLogEntryRepositoryTests {
         #expect(entry.deletedAt != nil)
         #expect(try repository.fetchAll(for: child).isEmpty)
     }
+
+    @Test("fetchAll(since:) and hasEntry(before:) are scoped to recordedAt against the cutoff")
+    func dateBoundedFetchAndExistenceCheck() throws {
+        let container = try makeContainer()
+        let child = try makeChild(in: container)
+        let repository = SwiftDataQuickLogEntryRepository(context: container.mainContext)
+        let cutoff = Date(timeIntervalSinceNow: -3600)
+
+        #expect(try repository.hasEntry(for: child, before: cutoff) == false)
+
+        _ = try repository.create(type: .poop, degree: 1, recordedAt: cutoff.addingTimeInterval(-60), child: child)
+        let recent = try repository.create(type: .food, degree: 2, recordedAt: .now, child: child)
+
+        let sinceEntries = try repository.fetchAll(for: child, since: cutoff)
+        #expect(sinceEntries.map(\.id) == [recent.id])
+        #expect(try repository.hasEntry(for: child, before: cutoff) == true)
+    }
 }
