@@ -238,4 +238,63 @@ struct MedicationLogFlowTests {
         #expect(sinceLogs.map(\.id) == [recentLog.id])
         #expect(try repository.hasEntry(for: child, before: cutoff) == true)
     }
+
+    @Test("soft-deleted logs are excluded from default reads")
+    func softDeleteExcludesFromDefaultReads() throws {
+        let container = try makeContainer()
+        let child = try makeChild(in: container)
+        let rule = try paracetamolRule()
+        let repository = SwiftDataMedicationLogRepository(context: container.mainContext)
+
+        let result = evaluate(rule: rule, volume: 5, weight: .missing, at: .now, priorLogs: [])
+        let log = makeLog(
+            child: child, rule: rule, volumeMilliliters: 5, result: result,
+            weightKilograms: nil, administeredAt: .now
+        )
+        try repository.create(log)
+        #expect(try repository.fetchAll(for: child).count == 1)
+
+        try repository.softDelete(log)
+
+        #expect(log.deletedAt != nil)
+        #expect(try repository.fetchAll(for: child).isEmpty)
+    }
+
+    @Test("logs are scoped per child")
+    func logsAreScopedPerChild() throws {
+        let container = try makeContainer()
+        let context = container.mainContext
+        let household = try SwiftDataHouseholdRepository(context: context).createGuestHouseholdIfNeeded()
+        let childRepository = SwiftDataChildRepository(context: context)
+        let childA = try childRepository.create(
+            name: "Ava",
+            birthday: .now,
+            avatarIdentifier: ChildAvatarOption.star.rawValue,
+            avatarColorIdentifier: ChildAvatarColorOption.mint.rawValue,
+            household: household
+        )
+        let childB = try childRepository.create(
+            name: "Leo",
+            birthday: .now,
+            avatarIdentifier: ChildAvatarOption.moon.rawValue,
+            avatarColorIdentifier: ChildAvatarColorOption.blue.rawValue,
+            household: household
+        )
+
+        let rule = try paracetamolRule()
+        let repository = SwiftDataMedicationLogRepository(context: context)
+        let result = evaluate(rule: rule, volume: 5, weight: .missing, at: .now, priorLogs: [])
+
+        try repository.create(makeLog(
+            child: childA, rule: rule, volumeMilliliters: 5, result: result,
+            weightKilograms: nil, administeredAt: .now
+        ))
+        try repository.create(makeLog(
+            child: childB, rule: rule, volumeMilliliters: 5, result: result,
+            weightKilograms: nil, administeredAt: .now
+        ))
+
+        #expect(try repository.fetchAll(for: childA).count == 1)
+        #expect(try repository.fetchAll(for: childB).count == 1)
+    }
 }
