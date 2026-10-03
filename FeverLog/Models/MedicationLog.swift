@@ -13,6 +13,8 @@ enum MedicationCalculationStatus: String, Codable, Sendable {
 /// change what a historical `MedicationLog` says happened.
 @Model
 final class MedicationLog {
+    #Index<MedicationLog>([\.childID], [\.administeredAt], [\.deletedAt])
+
     var id: UUID
     var childID: UUID
     var child: Child?

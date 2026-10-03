@@ -23,6 +23,12 @@ rather than by version/date.
   (`ChildFeverInsightsProvider`) remains in the codebase and tested, but is
   no longer surfaced in `ChildProfileScreen`. See ROADMAP.md's Phase 7
   entry.
+- Deployment target raised from iOS 17.0 to iOS 18.0, so `TemperatureLog`,
+  `MedicationLog`, `SymptomEntry`, `NoteEntry`, and `QuickLogEntry` can use
+  SwiftData's `#Index` macro (iOS 18+) on `childID`/`recordedAt`/
+  `deletedAt` — the fields every Timeline and Charts fetch predicate
+  filters or sorts on, previously unindexed local table scans. No shipped
+  releases exist yet, so there's no installed base on iOS 17 to lose.
 
 ### Verified
 - CI workflow's Xcode/simulator version pins investigated against GitHub's

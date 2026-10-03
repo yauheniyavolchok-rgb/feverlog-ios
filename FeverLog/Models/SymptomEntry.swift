@@ -3,6 +3,8 @@ import SwiftData
 
 @Model
 final class SymptomEntry {
+    #Index<SymptomEntry>([\.childID], [\.recordedAt], [\.deletedAt])
+
     var id: UUID
     var childID: UUID
     var child: Child?

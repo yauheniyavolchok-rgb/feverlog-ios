@@ -18,6 +18,8 @@ enum SyncQueueStatus: String, Codable, Sendable {
 /// records — domain state always lives on the record itself.
 @Model
 final class SyncQueueItem {
+    #Index<SyncQueueItem>([\.completedAt], [\.entityType, \.entityID])
+
     var id: UUID
 
     var entityType: String

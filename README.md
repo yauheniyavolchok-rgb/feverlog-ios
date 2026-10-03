@@ -14,7 +14,7 @@ distribution in Dr.Baby clinics.
 ## Requirements
 
 - Xcode 16 or later
-- iOS 17.0+ deployment target
+- iOS 18.0+ deployment target
 - [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`)
 
 ## Getting started

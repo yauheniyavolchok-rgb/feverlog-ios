@@ -12,6 +12,8 @@ enum TemperatureMeasurementMethod: String, Codable, CaseIterable, Sendable {
 
 @Model
 final class TemperatureLog {
+    #Index<TemperatureLog>([\.childID], [\.recordedAt], [\.deletedAt])
+
     var id: UUID
     var childID: UUID
     var child: Child?

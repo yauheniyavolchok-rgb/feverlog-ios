@@ -5,6 +5,8 @@ import SwiftData
 /// in v1.
 @Model
 final class NoteEntry {
+    #Index<NoteEntry>([\.childID], [\.recordedAt], [\.deletedAt])
+
     var id: UUID
     var childID: UUID
     var child: Child?

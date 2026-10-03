@@ -3,6 +3,8 @@ import SwiftData
 
 @Model
 final class QuickLogEntry {
+    #Index<QuickLogEntry>([\.childID], [\.recordedAt], [\.deletedAt])
+
     var id: UUID
     var childID: UUID
     var child: Child?
