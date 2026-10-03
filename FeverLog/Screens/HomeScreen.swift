@@ -172,22 +172,19 @@ struct HomeScreen: View {
             todaySymptomEntries = []
             return
         }
-        let calendar = Calendar.current
+        let startOfDay = Calendar.current.startOfDay(for: .now)
         do {
-            let allTemperatureLogs = try SwiftDataTemperatureLogRepository(context: modelContext).fetchAll(for: child)
-            todayLogs = allTemperatureLogs.filter { calendar.isDateInToday($0.recordedAt) }
+            todayLogs = try SwiftDataTemperatureLogRepository(context: modelContext).fetchAll(for: child, since: startOfDay)
         } catch {
             todayLogs = []
         }
         do {
-            let allMedicationLogs = try SwiftDataMedicationLogRepository(context: modelContext).fetchAll(for: child)
-            todayMedicationLogs = allMedicationLogs.filter { calendar.isDateInToday($0.administeredAt) }
+            todayMedicationLogs = try SwiftDataMedicationLogRepository(context: modelContext).fetchAll(for: child, since: startOfDay)
         } catch {
             todayMedicationLogs = []
         }
         do {
-            let allSymptomEntries = try SwiftDataSymptomEntryRepository(context: modelContext).fetchAll(for: child)
-            todaySymptomEntries = allSymptomEntries.filter { calendar.isDateInToday($0.recordedAt) }
+            todaySymptomEntries = try SwiftDataSymptomEntryRepository(context: modelContext).fetchAll(for: child, since: startOfDay)
         } catch {
             todaySymptomEntries = []
         }

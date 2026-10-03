@@ -21,6 +21,12 @@ struct MedicationDoseEntryScreen: View {
     @State private var resolvedWeightKilograms: Decimal?
     @State private var showingConfirmation = false
     @State private var errorMessage: String?
+    /// Fetched once (`.task`), not on every keystroke — the safety engine's
+    /// interval/daily-max checks need this child's prior doses, and that
+    /// set doesn't change just because the user is still typing into this
+    /// form. `recalculate()` reuses it instead of re-querying the whole
+    /// table on every `onChange`.
+    @State private var priorLogs: [MedicationLog] = []
 
     init(child: Child, rule: MedicationRule, existingLog: MedicationLog? = nil, onSaved: @escaping () -> Void = {}) {
         self.child = child
@@ -107,7 +113,19 @@ struct MedicationDoseEntryScreen: View {
                     .accessibilityIdentifier("medicationEntry.save")
             }
         }
-        .task { recalculate() }
+        .task {
+            // A silent fallback to "no prior doses" here would be a real
+            // safety risk — the engine's interval/daily-max checks would
+            // wrongly appear clean. On failure, skip recalculate() entirely
+            // rather than evaluate against a known-incomplete dose history:
+            // `evaluation` stays nil, which already keeps `canSave` false.
+            do {
+                priorLogs = try SwiftDataMedicationLogRepository(context: modelContext).fetchAll(for: child)
+                recalculate()
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+        }
         .confirmationDialog(
             L10n.MedicationEntry.confirmTitle,
             isPresented: $showingConfirmation,
@@ -157,9 +175,7 @@ struct MedicationDoseEntryScreen: View {
                 resolvedWeightKilograms = nil
             }
 
-            let medicationLogRepository = SwiftDataMedicationLogRepository(context: modelContext)
-            let allLogs = try medicationLogRepository.fetchAll(for: child)
-            let otherLogs = allLogs.filter { $0.id != existingLog?.id }
+            let otherLogs = priorLogs.filter { $0.id != existingLog?.id }
             let priorDoses = MedicationDoseInputMapper.priorDoseAdministrations(from: otherLogs)
 
             let input = MedicationDoseEvaluationInput(
