@@ -1,4 +1,7 @@
 import SwiftUI
+import os
+
+private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.drbaby.feverlog", category: "ChildrenSettingsScreen")
 
 struct ChildrenSettingsScreen: View {
     @Environment(ChildStore.self) private var childStore
@@ -7,6 +10,7 @@ struct ChildrenSettingsScreen: View {
     @State private var showingAddChild = false
     @State private var editingChild: Child?
     @State private var pendingDeleteChild: Child?
+    @State private var errorMessage: String?
 
     var body: some View {
         Group {
@@ -33,8 +37,12 @@ struct ChildrenSettingsScreen: View {
                 }
                 .listStyle(.plain)
             }
+            if let errorMessage {
+                Text(errorMessage).foregroundStyle(palette.danger)
+            }
         }
         .navigationTitle(L10n.ChildrenSettings.title)
+        .announcesAccessibilityErrors(errorMessage)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button {
@@ -59,7 +67,15 @@ struct ChildrenSettingsScreen: View {
         ) {
             Button(L10n.ChildProfile.deleteConfirmConfirm, role: .destructive) {
                 if let pendingDeleteChild {
-                    try? childStore.softDelete(pendingDeleteChild)
+                    do {
+                        try childStore.softDelete(pendingDeleteChild)
+                    } catch {
+                        errorMessage = error.localizedDescription
+                        logger.error("""
+                        Failed to delete child \(pendingDeleteChild.id, privacy: .public): \
+                        \(String(describing: error), privacy: .public)
+                        """)
+                    }
                 }
                 pendingDeleteChild = nil
             }

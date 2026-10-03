@@ -2,6 +2,9 @@ import SwiftData
 import SwiftUI
 import UIKit
 import UserNotifications
+import os
+
+private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.drbaby.feverlog", category: "RemindersScreen")
 
 struct RemindersScreen: View {
     @Environment(ChildStore.self) private var childStore
@@ -13,6 +16,7 @@ struct RemindersScreen: View {
     @State private var authorizationStatus: UNAuthorizationStatus = .notDetermined
     @State private var showingAddReminder = false
     @State private var editingReminder: Reminder?
+    @State private var errorMessage: String?
 
     var body: some View {
         Group {
@@ -35,8 +39,12 @@ struct RemindersScreen: View {
                 }
                 .listStyle(.plain)
             }
+            if let errorMessage {
+                Text(errorMessage).foregroundStyle(palette.danger)
+            }
         }
         .navigationTitle(L10n.Reminders.title)
+        .announcesAccessibilityErrors(errorMessage)
         .toolbar {
             if authorizationStatus != .denied {
                 ToolbarItem(placement: .primaryAction) {
@@ -112,7 +120,12 @@ struct RemindersScreen: View {
     private func actions(for reminder: Reminder) -> some View {
         Button(role: .destructive) {
             NotificationScheduler().cancel(reminder)
-            try? SwiftDataReminderRepository(context: modelContext).softDelete(reminder)
+            do {
+                try SwiftDataReminderRepository(context: modelContext).softDelete(reminder)
+            } catch {
+                errorMessage = error.localizedDescription
+                logger.error("Failed to delete reminder \(reminder.id, privacy: .public): \(String(describing: error), privacy: .public)")
+            }
             Task { await reload() }
         } label: {
             Label(L10n.Timeline.delete, systemImage: "trash")

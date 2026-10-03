@@ -78,6 +78,7 @@ struct TimelineScreen: View {
     @State private var medications: [MedicationRule] = []
     @State private var sortMode: TimelineSortMode = .time
     @State private var editTarget: TimelineEditTarget?
+    @State private var errorMessage: String?
 
     /// How far back `reload()` fetches, in 14-day increments — starts
     /// covering just the most recent window; "Load more" grows it rather
@@ -145,7 +146,11 @@ struct TimelineScreen: View {
                 }
                 .listStyle(.plain)
             }
+            if let errorMessage {
+                Text(errorMessage).foregroundStyle(palette.danger)
+            }
         }
+        .announcesAccessibilityErrors(errorMessage)
         .toolbar {
             if !items.isEmpty {
                 ToolbarItem(placement: .principal) {
@@ -171,7 +176,8 @@ struct TimelineScreen: View {
             palette: palette,
             medications: medications,
             onReload: { Task { await reload() } },
-            onEdit: { editTarget = $0 }
+            onEdit: { editTarget = $0 },
+            onError: { errorMessage = $0 }
         )
     }
 

@@ -1,4 +1,7 @@
 import SwiftUI
+import os
+
+private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.drbaby.feverlog", category: "AccountScreen")
 
 struct AccountScreen: View {
     @Environment(AuthService.self) private var authService
@@ -147,6 +150,11 @@ struct AccountScreen: View {
     }
 
     private func signOut() async {
-        try? await authService.signOut()
+        do {
+            try await authService.signOut()
+        } catch {
+            errorMessage = error.localizedDescription
+            logger.error("Failed to sign out: \(String(describing: error), privacy: .public)")
+        }
     }
 }
