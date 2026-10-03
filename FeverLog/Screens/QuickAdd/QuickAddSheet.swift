@@ -2,6 +2,9 @@ import FeverLogEngine
 import SwiftData
 import SwiftUI
 import UIKit
+import os
+
+private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.drbaby.feverlog", category: "QuickAddSheet")
 
 struct QuickAddSheet: View {
     @Environment(\.feverPalette) private var palette
@@ -18,6 +21,7 @@ struct QuickAddSheet: View {
     @State private var showingSymptomEntry = false
     @State private var showingNoteEntry = false
     @State private var selectedQuickLogType: QuickLogType?
+    @State private var errorMessage: String?
 
     var body: some View {
         NavigationStack {
@@ -66,10 +70,15 @@ struct QuickAddSheet: View {
                     }
                 }
 
+                if let errorMessage {
+                    Text(errorMessage).foregroundStyle(palette.danger)
+                }
+
                 Spacer()
             }
             .padding(Spacing.lg)
             .navigationTitle(L10n.QuickAdd.title)
+            .announcesAccessibilityErrors(errorMessage)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(L10n.TemperatureEntry.cancel) { dismiss() }
@@ -158,11 +167,19 @@ struct QuickAddSheet: View {
     }
 
     private func logQuickEntry(type: QuickLogType, degree: Int) {
-        let repository = SwiftDataQuickLogEntryRepository(context: modelContext)
-        _ = try? repository.create(type: type, degree: degree, recordedAt: .now, child: child)
         selectedQuickLogType = nil
-        UINotificationFeedbackGenerator().notificationOccurred(.success)
-        onLogged()
-        dismiss()
+        do {
+            let repository = SwiftDataQuickLogEntryRepository(context: modelContext)
+            _ = try repository.create(type: type, degree: degree, recordedAt: .now, child: child)
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
+            onLogged()
+            dismiss()
+        } catch {
+            errorMessage = error.localizedDescription
+            logger.error("""
+            Failed to create quick log entry (type: \(type.rawValue, privacy: .public), \
+            degree: \(degree, privacy: .public)): \(String(describing: error), privacy: .public)
+            """)
+        }
     }
 }
